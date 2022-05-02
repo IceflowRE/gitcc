@@ -5,35 +5,31 @@ from pathlib import Path
 from gitcc.git_hooks import COMMIT_MSG_SUMMARY
 
 
-def install_summary_git_hook(project_dir: Path, force: bool = False) -> None:
+def install_summary_git_hook(project_dir: Path, force: bool = False):
     """
-    Install git summary hook.
-
     :param force: override existing files
     :param project_dir: must contain a .git directory.
-    :raises FileExistsError: A hook already exist.
+    :return:
     """
-    hook_file: Path = project_dir.joinpath(".git/hooks/commit-msg")
+    hook_file = project_dir.joinpath(".git/hooks/commit-msg")
     if not force and hook_file.exists():
         raise FileExistsError("A commit message hook already exist!")
     shutil.copy2(COMMIT_MSG_SUMMARY, hook_file)
 
 
-def uninstall_summary_git_hook(project_dir: Path, force: bool = False) -> None:
+def uninstall_summary_git_hook(project_dir: Path, force: bool = False):
     """
-    Uninstall git summary hook.
-
     :param force: remove file even if it might not be an gitcc hook
     :param project_dir: must contain a .git directory.
-    :raises RuntimeError: Cannot remove the hook.
+    :return:
     """
-    hook_file: Path = project_dir.joinpath(".git/hooks/commit-msg")
+    hook_file = project_dir.joinpath(".git/hooks/commit-msg")
     if not force and not filecmp.cmp(COMMIT_MSG_SUMMARY, hook_file, shallow=False):
         raise RuntimeError("A commit message hook was found, but it might be customized, not removing.")
     hook_file.unlink(missing_ok=True)
 
 
-GIT_HOOKS = {  # noqa: PLR6101, WPS407
+GIT_HOOKS = {
     'install': {
         'summary': install_summary_git_hook,
     },
@@ -45,7 +41,6 @@ GIT_HOOKS = {  # noqa: PLR6101, WPS407
 
 def cmd_git_hook(repo: Path, action: str, hooks: list[str], force: bool = False) -> int:
     """
-    Execute git hooks.
 
     :param repo: repository path
     :param action: action to execute
@@ -53,7 +48,7 @@ def cmd_git_hook(repo: Path, action: str, hooks: list[str], force: bool = False)
     :param force: force action
     :return: exit code
     """
-    exit_code: int = 0
+    exit_code = 0
     for hook in hooks:
         try:
             GIT_HOOKS[action][hook](repo, force)

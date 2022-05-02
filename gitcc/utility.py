@@ -1,15 +1,9 @@
 import re
-from typing import Optional, cast
 
-from git import Repo
-from git.objects import Commit
+from git import Repo, Commit
 
 
 class RxSummary:
-    """
-    Regex check for the commit summary.
-    """
-
     rx_parser: re.Pattern = re.compile(r"\[(.*)] (.*)")
     rx_category: re.Pattern = re.compile(r"\*|(?:[a-z0-9]{2,}[\s|-]?)+")
     rx_description: re.Pattern = re.compile(r"[A-Z0-9].+[^.!?,\s]")
@@ -18,70 +12,50 @@ class RxSummary:
         self.category_tag: str = ""
         self.description_text: str = ""
 
-        match: Optional[re.Match] = self.rx_parser.fullmatch(summary)
+        match = self.rx_parser.fullmatch(summary)
         if match is None:
             return
         self.category_tag = match.group(1)
         self.description_text = match.group(2)
 
     def valid_format(self) -> bool:
-        """
-        Has summary valid format.
-        """
-        return self.category_tag != "" and self.description_text != ""  # noqa: PLC1901
+        return self.category_tag != "" and self.description_text != ""
 
     def valid_category_tag(self) -> bool:
-        """
-        Has valid summary tag.
-        """
-        return self.rx_category.fullmatch(self.category_tag) is not None
+        return self.rx_category.fullmatch(self.category_tag)
 
     def valid_description(self) -> bool:
-        """
-        Has valid summary description.
-        """
-        return self.rx_description.fullmatch(self.description_text) is not None
+        return self.rx_description.fullmatch(self.description_text)
 
 
 def check_summary(summary: str) -> str:
-    """
-    Check summary text.
-    """
-    check: RxSummary = RxSummary(summary)
+    check = RxSummary(summary)
     if not check.valid_format():
         return "Invalid format. It should be '[<tag>] <Good Description>'"
 
     if not check.valid_category_tag():
-        return (
-            "Invalid category tag. It should be either a single '*' or completely lowercase " +
-            "letters or numbers, at least 2 characters long, other allowed characters are: '|', '-' and spaces."
-        )
+        return "Invalid category tag. It should be either a single '*' or completely lowercase " \
+               "letters or numbers, at least 2 characters long, other allowed characters are: '|', '-' and spaces."
 
     if not check.valid_description():
-        return (
-            "Invalid description. It should start with an uppercase letter or number, " +
-            "should be not to short and should not end with a punctuation."
-        )
+        return "Invalid description. It should start with an uppercase letter or number, " \
+               "should be not to short and should not end with a punctuation."
 
     return ""
 
 
-def check_commit(commit: Commit) -> tuple[bool, str]:
-    """
-    Check specific commit.
-    """
-    msg: str = check_summary(str(commit.summary))
-    if not msg:
-        return True, f"Correct | {commit.hexsha} - {str(commit.summary)}"
-    return False, f"Failure | { commit.hexsha} - {str(commit.summary)}\n    Summary: {msg}"
+def check_commit(commit: Commit) -> (bool, str):
+    msg = check_summary(commit.summary)
+    if msg == "":
+        return True, f"Correct | {commit.hexsha} - {commit.summary}"
+    else:
+        return False, f"Failure | {commit.hexsha} - {commit.summary}\n" \
+                      f"    Summary: {msg}"
 
 
-def check_history(repo: Repo, exit_sha: str = "", include_correct: bool = False) -> tuple[bool, list[str]]:
-    """
-    Check whole history.
-    """
-    success: bool = True
-    msgs: list[str] = []
+def check_history(repo: Repo, exit_sha: str = "", include_correct: bool = False) -> (bool, list[str]):
+    success = True
+    msgs = []
     for commit in repo.iter_commits():
         if commit.hexsha == exit_sha:
             break
@@ -92,16 +66,14 @@ def check_history(repo: Repo, exit_sha: str = "", include_correct: bool = False)
     return success, msgs
 
 
-def check_branch(repo: Repo, source_branch: str, target_branch: str, include_correct: bool = False) -> tuple[bool, list[str]]:
-    """
-    Check specific branch.
-    """
-    error_msgs: list[str] = []
+def check_branch(repo: Repo, source_branch: str, target_branch: str, include_correct: bool = False) -> (
+        bool, list[str]):
+    error_msgs = []
 
-    common_ancestors: list[Commit] = cast(list[Commit], repo.merge_base(source_branch, target_branch))
-    if not common_ancestors:
+    common_ancestors = repo.merge_base(source_branch, target_branch)
+    if len(common_ancestors) == 0:
         error_msgs.append("ERROR: No common ancestor found")
-        return False, error_msgs
+        return error_msgs
 
-    start_commit: str = common_ancestors[0].hexsha
+    start_commit = common_ancestors[0]
     return check_history(repo, exit_sha=start_commit, include_correct=include_correct)
