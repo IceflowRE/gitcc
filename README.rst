@@ -15,78 +15,104 @@ GitCC checks commit messages for certain rules.
 
 gitcc [\-h] [\-v] {summary, git-hook, commit, history, branch}
 
-
 **summary** <text>
         check the given summary text
-    ..
+
     **text**
             text to check
+
         ..
 
 ----
 
 *git-hook* [--force] <action> <hooks> [<hooks> ...] <repository>
         install or uninstall a git hook
+
     **<action>**
             Install or uninstall. [install, uninstall]
+
         ..
+
     **<hooks>**
             Choose available hooks. [summary]
+
         ..
+
     **<repository>**
             path to the repository
+
         ..
+
     [options]
         **--force**
                 Force install or uninstall, this might override existing files!
+
             ..
 
 ----
 
 **commit** <repository>
         check current commit
+
     **<repository>**
             path to the repository
+
         ..
 
 ----
 
 **history** [--sha <SHA>] [--verbose] <repository>
             check the current branch history
+
     **<repository>**
             path to the repository
+
         ..
+
     [options]
         **--sha** <SHA>
                 check until this commit (exclusive)
+
             ..
+
         **--verbose**
                 print correct commits too
+
             ..
 
 ----
 
 **branch** [--verbose] <target> <repository>
         check the current branch with an other branch common ancestor. Is the same as gitcc history with git merge-base <source> <target>
+
     ..
+
     **<target>**
             target branch
+
         ..
+
     **<repository>**
             path to the repository
+
         ..
+
     [options]
         **--verbose**
                 print correct commits too
+
             ..
 
 ----
 
 **-h**, **--help**
         show this help message and exit
+
     ..
+
 **-v**, **--version**
         show program's version number and exit
+
     ..
 
 ----
