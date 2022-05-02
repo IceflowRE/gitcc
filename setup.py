@@ -30,7 +30,7 @@ setup(
     packages=find_packages(include=['gitcc', 'gitcc.*']),
     python_requires='>=3.9',
     install_requires=[
-        "GitPython==3.1.14",
+        "GitPython==3.1.27",
     ],
     extras_require={
         'dev': [

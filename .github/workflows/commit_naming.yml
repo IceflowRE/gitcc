@@ -3,9 +3,11 @@ on:
   pull_request:
     branches:
       - main
+      - gitpython-fox
   push:
     branches:
       - main
+      - gitpython-fox
 
 jobs:
   naming:
