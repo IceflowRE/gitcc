@@ -37,7 +37,7 @@ jobs:
 
       - name: Install gitcc
         run: |
-          pip install ./gitcc
+          pip install .
 
       - name: Check commits (Pull Request)
         if: ${{ github.event_name == 'pull_request' }}
