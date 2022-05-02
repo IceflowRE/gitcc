@@ -32,7 +32,7 @@ setup(
     install_requires=[
         "GitPython==3.1.14",
     ],
-    extra_requires={
+    extras_require={
         'dev': [
             'flake8',
             # flake8 extensions start
