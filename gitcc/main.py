@@ -22,9 +22,9 @@ def cmd_parser():
     parser_summary.add_argument(dest='summary_text', metavar='text', help="text to check")
 
     parser_git_hook = subparsers.add_parser('git-hook', help='install or uninstall a git hook')
-    parser_git_hook.add_argument(dest='git_hook_action', metavar='action', choices=['install', 'uninstall'], help="Install or uninstall a gitcc git hook.")
+    parser_git_hook.add_argument(dest='git_hook_action', metavar='action', choices=['install', 'uninstall'], help="Install or uninstall.")
     parser_git_hook.add_argument(
-        dest='git_hook_hooks', metavar='hooks', type=str, choices=['summary'], nargs='+', help="Install or uninstall a gitcc git hook."
+        dest='git_hook_hooks', metavar='hooks', type=str, choices=['summary'], nargs='+', help="Choose available hooks."
     )
     parser_git_hook.add_argument(dest='repository', type=str, help='path to the repository')
     parser_git_hook.add_argument(
