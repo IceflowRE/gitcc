@@ -26,7 +26,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install --upgrade wheel
           pip install --upgrade -e .[dev]
-          unidown --version
+          gitcc --version
 
       - name: Build
         shell: bash
