@@ -28,7 +28,7 @@ class RxSummary:
         """
         Has summary valid format.
         """
-        return not self.category_tag and not self.description_text
+        return self.category_tag != "" and self.description_text != ""  # noqa: PLC1901
 
     def valid_category_tag(self) -> bool:
         """
