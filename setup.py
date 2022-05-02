@@ -8,9 +8,9 @@ with Path('README.rst').open(mode='r', encoding='UTF-8') as reader:
     LONG_DESCRIPTION = reader.read()
 
 setup(
-    name="GIT Commit Check",
+    name="gitcc",
     version="1.2.0",
-    description="Check the commit summary",
+    description="GIT Commit Check - check the commit for certain rules",
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/x-rst',
     author="Iceflower S",
