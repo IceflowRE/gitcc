@@ -9,7 +9,7 @@ with Path('README.rst').open(mode='r', encoding='UTF-8') as reader:
 
 setup(
     name="gitcc",
-    version="1.2.0",
+    version="2.0.0",
     description="GIT Commit Check - check the commit for certain rules",
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/x-rst',
@@ -18,7 +18,7 @@ setup(
     license='MIT',
     url="https://github.com/IceflowRE/gitcc",
     classifiers=[
-        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'License :: OSI Approved :: MIT License',
         'Development Status :: 5 - Production/Stable',
         'Operating System :: OS Independent',

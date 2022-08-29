@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: ${{ matrix.os }} ${{ matrix.python-version }}
+    name: ${{ matrix.os }} Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -22,6 +22,7 @@ jobs:
 
       - name: Install dependencies
         shell: bash
+        working-directory: ./python
         run: |
           python -m pip install --upgrade pip
           pip install --upgrade wheel
@@ -30,12 +31,14 @@ jobs:
 
       - name: Build
         shell: bash
+        working-directory: ./python
         run: |
           python setup.py clean --all
           python setup.py bdist_wheel
 
       - name: Code style check
         shell: bash
+        working-directory: ./python
         run: |
           flake8 ./gitcc
           pyroma .
@@ -43,13 +46,15 @@ jobs:
 
       - name: Testing
         shell: bash
+        working-directory: ./python
         run: |
           python setup.py check -v -m -s
           twine check dist/*
 
       - name: Publish to PyPI
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10.0' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
+          packages_dir: python/dist
           user: __token__
           password: ${{ secrets.PYPI_TOKEN }}
