@@ -4,10 +4,9 @@ from pathlib import Path
 from typing import Optional
 
 from git import InvalidGitRepositoryError, Repo
-from gitcc import validation
-from gitcc.commit_validator import Result, Status, split_message
+from gitcc.commit_validator import CommitValidator, Result, Status, split_message
 from gitcc.git_hook import cmd_git_hook
-from gitcc.utility import check_branch, check_history, load_validator, load_validator_file, print_results
+from gitcc.utility import check_branch, check_history, import_validator, import_validator_from_file, print_results
 
 
 def cmd_parser():
@@ -58,11 +57,11 @@ def main():  # noqa: D103, PLR0912, PLR1260
     args = cmd_parser().parse_args(sys.argv[1:])
 
     if args.validator != "":
-        validator = load_validator(args.validator)
+        validator = import_validator(args.validator)
     elif args.validator_file is not None:
-        validator = load_validator_file(args.validator_file)
+        validator = import_validator_from_file(args.validator_file)
     else:
-        validator = validation.Default()
+        validator = CommitValidator()
 
     if args.command == 'message':
         if args.message_file:

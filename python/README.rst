@@ -11,7 +11,7 @@ GitCC
 
 GitCC checks commit messages for certain rules.
 
-To use as a GitHub Actions refer to this `example <../.github/workflows/commit_naming_python.yml>`__.
+To use as a GitHub Actions refer to the ``commit-check-python`` section in `example <../.github/workflows/commit_check.yml>`__.
 
 To expand gitcc to apply your own rules inherit from `gitcc.commit_validator.Validator <./gitcc/commit_validator.py>`__.
 If you use the ``--validator-file`` argument the Validator class in that file must be named ``Validator``.

@@ -1,4 +1,3 @@
-from abc import ABC
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
@@ -6,10 +5,10 @@ from typing import Optional
 from git.objects import Commit
 
 
-class Status(Enum):
+class Status(str, Enum):
     """
     Status of a commit check.
-    Only Ok counts as a success.
+    All none failures count as a success.
     """
 
     Failure = "Failure"
@@ -28,11 +27,13 @@ class Result:
     commit: Optional[Commit] = None
 
     def __str__(self):  # noqa: D105
-        msg: str = f"{self.status.value}"
+        msg: str = self.status.value
         if self.commit is not None:
             msg += f" | {self.commit.hexsha} - {str(self.commit.summary)}"
         if self.message != "":
-            msg += f" |\n        : {self.message}"
+            if self.commit is None:
+                msg += " |"
+            msg += f"\n        : {self.message}"
         return msg
 
 
@@ -46,7 +47,7 @@ def split_message(message: str) -> tuple[str, str]:
     return res[0], res[1]
 
 
-class CommitValidator(ABC):
+class CommitValidator:
     """
     Validator for commits.
     """
@@ -61,6 +62,6 @@ class CommitValidator(ABC):
 
     def validate_message(self, summary: str, description: str) -> Result:
         """
-        Check a commit message. Used by default by ~gitcc.validation.Default.validate.
+        Check a commit message.
         """
-        return Result(Status.Warning, "A separate message check was not provided.")
+        return Result(Status.Ok, "")
