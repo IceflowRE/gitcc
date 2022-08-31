@@ -20,7 +20,7 @@ jobs:
       - name: Checkout gh-actions
         uses: actions/checkout@v3
         with:
-          ref: 'gh-actions-test'
+          ref: 'gh-actions'
           path: ${{ env.gh_actions_git_path }}
 
       - name: npm install
