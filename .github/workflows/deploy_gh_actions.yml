@@ -10,7 +10,7 @@ env:
   main_git_path: './main/'
 
 jobs:
-  build-typescript:
+  deploy-typescript:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
@@ -38,6 +38,7 @@ jobs:
           rm -rf ./*
       - name: Copy new files
         run: |
+          mkdir -p ${{ env.gh_actions_git_path }}/typescript/dist/
           cp -rf ${{ env.main_git_path }}/typescript/dist* ${{ env.gh_actions_git_path }}/typescript/dist/
           cp -rf ${{ env.main_git_path }}/action.yml ${{ env.gh_actions_git_path }}
       - name: Push new files
