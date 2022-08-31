@@ -30,8 +30,8 @@ jobs:
       - name: Build gitcc
         working-directory: ${{ env.main_git_path }}/typescript
         run: |
-          npm build
-          npm package
+          npm run build
+          npm run package
 
       - name: Remove old files
         working-directory: ${{ env.gh_actions_git_path }}
