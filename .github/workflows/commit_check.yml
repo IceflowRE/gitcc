@@ -14,10 +14,8 @@ jobs:
     name: Commit Check
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Commit Check
-        uses: ./
+        uses: IceflowRE/gitcc@gh-actions
         with:
           validator: "SimpleTag"
   commit-check-python:

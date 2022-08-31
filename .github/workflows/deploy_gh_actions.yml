@@ -38,8 +38,7 @@ jobs:
           rm -rf ./*
       - name: Copy new files
         run: |
-          cp -rf ${{ env.main_git_path }}/typescript/dist* ${{ env.gh_actions_git_path }}
-          cp -rf ${{ env.main_git_path }}/typescript/README.rst ${{ env.gh_actions_git_path }}
+          cp -rf ${{ env.main_git_path }}/typescript/dist* ${{ env.gh_actions_git_path }}/typescript/dist/
           cp -rf ${{ env.main_git_path }}/action.yml ${{ env.gh_actions_git_path }}
       - name: Push new files
         working-directory: ${{ env.gh_actions_git_path }}
