@@ -54,7 +54,7 @@ export function print_results(checks: Result[]): boolean {
 export function check_commits(commits: Commit[], validator: CommitValidator): Result[] {
     const checks: Result[] = []
     for (const commit of commits) {
-        let res: Result = validator.validate(commit)
+        const res: Result = validator.validate(commit)
         if (res.commit !== undefined) {
             res.commit = commit
         }
