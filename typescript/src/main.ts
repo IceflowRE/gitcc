@@ -12,6 +12,18 @@ async function run(): Promise<void> {
 
         const validator_file: string = core.getInput('validator_file')
         const validator_name: string = core.getInput('validator')
+
+        const octokit = github.getOctokit("")
+        octokit.rest.repos.getContent({
+            path: validator_file,
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            ref: github.context.payload['head_commit']['id'],
+        })
+            .then(data => {
+                core.info(data.data.toString())
+            })
+
         const validator: CommitValidator = await get_validator(validator_name, validator_file)
 
         const checks: Result[] = check_commits(get_commits(), validator)
