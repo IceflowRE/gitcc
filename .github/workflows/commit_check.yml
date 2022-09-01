@@ -10,14 +10,6 @@ on:
       - js
 
 jobs:
-  commit-check:
-    name: Commit Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Commit Check
-        uses: IceflowRE/gitcc@gh-actions
-        with:
-          validator: "SimpleTag"
   commit-check-python:
     name: Commit Check (Python)
     runs-on: ubuntu-latest

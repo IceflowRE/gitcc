@@ -50,3 +50,13 @@ jobs:
           git add .
           git diff-index --quiet HEAD || git commit -am "[actions] Build of ${{ github.sha }}"
           git push
+
+  commit-check:
+    name: Commit Check
+    runs-on: ubuntu-latest
+    needs: deploy-typescript
+    steps:
+      - name: Commit Check
+        uses: IceflowRE/gitcc@gh-actions
+        with:
+          validator: "SimpleTag"
