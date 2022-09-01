@@ -12,7 +12,7 @@ export async function get_validator(validator: string, validator_file: string): 
     }
 
     if (validator_file !== '') {
-        return import_validator_from_file(validator_file)
+        return new (await import_validator_cls(validator_file))()
     }
     switch (validator) {
         case 'SimpleTag':
@@ -22,9 +22,12 @@ export async function get_validator(validator: string, validator_file: string): 
     }
 }
 
-export async function import_validator_from_file(validator_file: string): Promise<CommitValidator> {
-    const validation = await import(validator_file)
-    return new validation.Validator()
+const _importDynamic = new Function('modulePath', 'return import(modulePath)')
+
+export async function import_validator_cls(validator_file: string): Promise<typeof CommitValidator> {
+    const validation = await _importDynamic(validator_file)
+    validation.import_types(CommitValidator, Commit, Result, Status)
+    return validation.createValidator()
 }
 
 // Return true when not one check was a failure.
@@ -51,6 +54,10 @@ export function print_results(checks: Result[]): boolean {
 export function check_commits(commits: Commit[], validator: CommitValidator): Result[] {
     const checks: Result[] = []
     for (const commit of commits) {
+        let res: Result = validator.validate(commit)
+        if (res.commit !== undefined) {
+            res.commit = commit
+        }
         checks.push(validator.validate(commit))
     }
     return checks

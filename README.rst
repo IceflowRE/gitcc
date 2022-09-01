@@ -33,7 +33,7 @@ Credits
         - iceflower@gmx.de
 
 License
--------
+=======
 
 Copyright 2021-present Iceflower S (iceflower@gmx.de)
 

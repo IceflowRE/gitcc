@@ -6,14 +6,6 @@ export enum Status {
     Ok = 'Correct'
 }
 
-export function split_message(message: string): [string, string] {
-    const res: string[] = message.split('\n', 1)
-    if (res.length === 1) {
-        return [res[0], '']
-    }
-    return [res[0], res[1]]
-}
-
 export class Result {
     status: Status = Status.Failure
     message = ''
@@ -41,13 +33,19 @@ export class Result {
 }
 
 export class CommitValidator {
+    static split_message(message: string): [string, string] {
+        const res: string[] = message.split('\n', 1)
+        if (res.length === 1) {
+            return [res[0], '']
+        }
+        return [res[0], res[1]]
+    }
+
     validate(commit: Commit): Result {
         if (commit.message === undefined) {
-            throw Error('commit message was empty.')
+            return new Result(Status.Failure, "commit message was empty.")
         }
-        const res: Result = this.validate_message(...split_message(commit.message))
-        res.commit = commit
-        return res
+        return this.validate_message(...CommitValidator.split_message(commit.message))
     }
 
     validate_message(_summary: string, _description: string): Result {

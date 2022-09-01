@@ -16,10 +16,14 @@ jobs:
         working-directory: ./typescript
         run: |
           npm run all
-      - name: Commit Check
+      - name: Commit Check (shipped)
         uses: ./
         with:
           validator: "SimpleTag"
+      - name: Commit Check (local)
+        uses: ./
+        with:
+          validator_file: "./typescript/example/simpleTag.mjs"
 
   build-python:
     name: ${{ matrix.os }} Python ${{ matrix.python-version }}

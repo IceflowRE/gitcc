@@ -10,7 +10,78 @@ GitCC checks commit messages for certain rules.
 
 ----
 
+Usage
+=====
 
+.. code-block:: yml
+
+    - uses: IceflowRE/gitcc@v2
+      with:
+        # Filepath to an own validator. On how to write your own, see below.
+        validator_file: ''
+
+        # Name of an validator which is shipped with gitcc. Valid names: SimpleTag
+        validator: ''
+
+Shipped validators
+------------------
+
+SimpleTag
+    Format: ``[<tag>] <Good Description>`` (e.g. ``[ci] Fix testing suite installation``)
+
+Custom validators
+-----------------
+
+Create somewhere in your repository a file (e.g. ``validator.mjs``) and use the path in ``validator_file``.
+
+Your validator will inherit from `CommitValidator <./src/commit-validator.ts#L35>`__. Only implement the function you need, so it wont override the default behavior.
+
+You have to always return a `Result <./src/commmit-validator.ts#L9>`__. Only ``Status.Failure`` will result into an error.
+
+`CommitValidator <./src/commit-validator.ts#L35>`__ provides the following functions.
+
+- ``split_message(message: string): [string, string]``
+    Will split the message into summary and description.
+
+- ``validate(commit: Commit): Result``
+    Will call ``validate_message`` by default.
+
+- ``validate_message(summary: string, description: string): Result``
+    For simple use cases when only the summary and description text has to be checked.
+
+Look here for the `Reference`_ and an example `here <./src/example/simpleTag.mjs>`__.
+
+Template
+********
+
+.. code-block:: javascript
+
+    let Commit
+    let CommitValidator
+    let Result
+    let Status
+
+    export function import_types(commitValidatorCls, commitCls, resultCls, statusCls) {
+        console.log(resultCls)
+        CommitValidator = commitValidatorCls
+        Commit = commitCls
+        Result = resultCls
+        Status = statusCls
+    }
+
+    export function createValidator() {
+        return class Validator extends CommitValidator {
+            // PLACE HERE YOUR CODE
+        }
+    }
+
+Reference
+---------
+
+- `Commit <./src/commit.ts#L16>`__
+- `CommitValidator <./src/commit-validator.ts#L35>`__
+- `Result <./src/commmit-validator.ts#L9>`__
+- `Status <./src/commmit-validator.ts#L3>`__
 
 Credits
 =======
@@ -20,7 +91,7 @@ Credits
         - iceflower@gmx.de
 
 License
--------
+=======
 
 Copyright 2021-present Iceflower S (iceflower@gmx.de)
 
