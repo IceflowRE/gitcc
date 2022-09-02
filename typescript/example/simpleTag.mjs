@@ -4,7 +4,6 @@ let Result
 let Status
 
 export function import_types(commitValidatorCls, commitCls, resultCls, statusCls) {
-    console.log(resultCls)
     CommitValidator = commitValidatorCls
     Commit = commitCls
     Result = resultCls
