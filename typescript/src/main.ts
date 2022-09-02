@@ -17,8 +17,10 @@ async function run(): Promise<void> {
         // just to be sure
         core.setSecret(access_token)
 
-        if (!await download_validator_file(validator_file, access_token)) {
-            return
+        if (validator_file !== "") {
+            if (!await download_validator_file(validator_file, access_token)) {
+                return
+            }
         }
         const validator: CommitValidator = await get_validator(validator_name, validator_file)
 
