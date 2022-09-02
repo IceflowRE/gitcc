@@ -77,8 +77,8 @@ export async function download_validator_file(validator_file: string, access_tok
         return ""
     }
     const buffer = Buffer.from(response.data.content, 'base64').toString('utf-8')
-    fs.writeFile("./validator.mjs", buffer, err => {
+    fs.writeFile("validator.mjs", buffer, err => {
         if (err) throw err
     })
-    return "./validator.mjs"
+    return "validator.mjs"
 }
