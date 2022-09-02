@@ -1,5 +1,6 @@
 import * as github from '@actions/github'
 import {GitHub} from "@actions/github/lib/utils"
+import * as core from '@actions/core'
 
 export class User {
     email: string | undefined = undefined
@@ -65,6 +66,8 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
                 return []
             }
             commits_raw = response.data
+            core.info(response.url)
+            core.info(response.data.toString())
             break
         }
         default:
