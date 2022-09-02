@@ -45,7 +45,11 @@ export class CommitValidator {
         if (commit.message === undefined) {
             return new Result(Status.Failure, "commit message was empty.")
         }
-        return this.validate_message(...CommitValidator.split_message(commit.message))
+        const check: Result = this.validate_message(...CommitValidator.split_message(commit.message))
+        if (check.commit === undefined) {
+            check.commit = commit
+        }
+        return check
     }
 
     validate_message(_summary: string, _description: string): Result {
