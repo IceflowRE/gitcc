@@ -2,7 +2,13 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {get_commits} from './commit'
 import {CommitValidator, Result} from './commit-validator'
-import {check_commits, get_validator, download_validator_file, print_results} from './utility'
+import {
+    check_commits,
+    download_validator_file,
+    get_shipped_validator,
+    import_validator_cls,
+    print_results
+} from './utility'
 
 async function run(): Promise<void> {
     try {
@@ -17,12 +23,25 @@ async function run(): Promise<void> {
         // just to be sure
         core.setSecret(access_token)
 
+        if (validator_file !== '' && validator_name !== '') {
+            core.setFailed("Please provide only 'validator' or 'validator_file'!")
+            return
+        }
+        if (validator_file === '' && validator_name === '') {
+            core.setFailed("Please provide either 'validator' or 'validator_file'!")
+            return
+        }
+
+        let validator: CommitValidator
         if (validator_file !== "") {
-            if (!await download_validator_file(validator_file, access_token)) {
+            const mjs_file = await download_validator_file(validator_file, access_token)
+            if (mjs_file === "") {
                 return
             }
+            validator = new (await import_validator_cls(mjs_file))()
+        } else {
+            validator = await get_shipped_validator(validator_name)
         }
-        const validator: CommitValidator = await get_validator(validator_name, validator_file)
 
         const checks: Result[] = check_commits(get_commits(), validator)
         const all_ok: boolean = print_results(checks)

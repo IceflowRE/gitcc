@@ -5,17 +5,7 @@ import {SimpleTag} from './validation'
 import * as github from "@actions/github";
 import * as fs from "fs";
 
-export async function get_validator(validator: string, validator_file: string): Promise<CommitValidator> {
-    if (validator_file !== '' && validator !== '') {
-        throw Error("Please provide only 'validator' or 'validator_file'!")
-    }
-    if (validator_file === '' && validator === '') {
-        throw Error("Please provide either 'validator' or 'validator_file'!")
-    }
-
-    if (validator_file !== '') {
-        return new (await import_validator_cls("./validator.mjs"))()
-    }
+export async function get_shipped_validator(validator: string): Promise<CommitValidator> {
     switch (validator) {
         case 'SimpleTag':
             return new SimpleTag()
@@ -65,8 +55,8 @@ export function check_commits(commits: Commit[], validator: CommitValidator): Re
     return checks
 }
 
-// returns success
-export async function download_validator_file(validator_file: string, access_token: string): Promise<boolean> {
+// return path to downloaded file
+export async function download_validator_file(validator_file: string, access_token: string): Promise<string> {
     const octokit = github.getOctokit(access_token)
     const response = await octokit.rest.repos.getContent({
         path: validator_file,
@@ -76,17 +66,17 @@ export async function download_validator_file(validator_file: string, access_tok
     })
     if (response.status !== 200) {
         core.setFailed(`failed to retrieve validator file '${response.url}'`)
-        return false
+        return ""
     }
     if (!Array.isArray(response)) {
         core.setFailed(`given path '${response.url}' was a directory`)
-        return false
+        return ""
     }
     if(!("content" in response.data)) {
         core.setFailed(`download of '${response.url}' failed`)
-        return false
+        return ""
     }
     const buffer = Buffer.from(response.data.content, 'base64').toString('utf-8')
     fs.writeFile("./validator.mjs", buffer, err => { if (err) throw err })
-    return true
+    return "./validator.mjs"
 }
