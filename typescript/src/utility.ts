@@ -25,7 +25,7 @@ export async function get_validator(validator: string, validator_file: string): 
 const _importDynamic = new Function('modulePath', 'return import(modulePath)')
 
 export async function import_validator_cls(validator_file: string): Promise<typeof CommitValidator> {
-    const validation = await _importDynamic("../.." + validator_file)
+    const validation = await _importDynamic(validator_file)
     validation.import_types(CommitValidator, Commit, Result, Status)
     return validation.createValidator()
 }

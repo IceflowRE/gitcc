@@ -17,6 +17,8 @@ Usage
 
     - uses: IceflowRE/gitcc@v2
       with:
+        # GitHub private access token default: {{ $github.token }}.
+        access_token: ''
         # Filepath to an own validator. On how to write your own, see below.
         validator_file: ''
 
