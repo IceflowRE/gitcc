@@ -34,12 +34,14 @@ async function run(): Promise<void> {
 
         let validator: CommitValidator
         if (validator_file !== "") {
-            const mjs_file = await download_validator_file(validator_file, access_token)
+            const [validator_url, mjs_file] = await download_validator_file(validator_file, access_token)
             if (mjs_file === "") {
                 return
             }
+            core.info(`Using validator from '${validator_url}'`)
             validator = new (await import_validator_cls(mjs_file))()
         } else {
+            core.info(`Using shipped validator '${validator_name}'`)
             validator = await get_shipped_validator(validator_name)
         }
 

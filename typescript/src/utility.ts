@@ -55,8 +55,8 @@ export function check_commits(commits: Commit[], validator: CommitValidator): Re
     return checks
 }
 
-// return path to downloaded file
-export async function download_validator_file(validator_file: string, access_token: string): Promise<string> {
+// return html url to validator file and local filepath to downloaded file
+export async function download_validator_file(validator_file: string, access_token: string): Promise<[string, string]> {
     const octokit = github.getOctokit(access_token)
     const response = await octokit.rest.repos.getContent({
         path: validator_file,
@@ -66,19 +66,19 @@ export async function download_validator_file(validator_file: string, access_tok
     })
     if (response.status !== 200) {
         core.setFailed(`failed to retrieve validator file '${response.url}'`)
-        return ""
+        return ["", ""]
     }
     if (Array.isArray(response.data)) {
         core.setFailed(`given path '${response.url}' was a directory`)
-        return ""
+        return ["", ""]
     }
     if (!("content" in response.data)) {
         core.setFailed(`download of '${response.url}' failed`)
-        return ""
+        return ["", ""]
     }
     const buffer = Buffer.from(response.data.content, 'base64').toString('utf-8')
     fs.writeFile("./validator.mjs", buffer, err => {
         if (err) throw err
     })
-    return "../../validator.mjs"
+    return [response.data.html_url || "", "../../validator.mjs"]
 }

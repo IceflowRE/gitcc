@@ -17,7 +17,7 @@ export class Result {
         this.commit = commit
     }
 
-    toString(): string {
+    public toString(): string {
         let msg: string = this.status.toString()
         if (this.commit !== undefined) {
             msg += ` | ${this.commit.hexsha} - ${this.commit.summary()}`
