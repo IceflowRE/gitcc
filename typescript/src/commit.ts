@@ -1,4 +1,6 @@
 import * as github from '@actions/github'
+import {GitHub} from "@actions/github/lib/utils";
+import * as core from "@actions/core";
 
 export class User {
     email: string | undefined = undefined
@@ -43,8 +45,33 @@ export class Commit {
     }
 }
 
-export function get_commits(): Commit[] {
-    const commits_raw = github.context.payload['commits']
+export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise<Commit[]> {
+    let commits_raw: any[] = []
+    switch (github.context.eventName) {
+        case 'push':
+            commits_raw = github.context.payload['commits']
+            break
+        case 'pull_request':
+            const pr_number = github.context.payload.pull_request?.number
+            if (pr_number === undefined) {
+                return []
+            }
+
+            let response = await octokit.rest.pulls.listCommits({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                pull_number: pr_number,
+            })
+            if (response.status !== 200) {
+                return []
+            }
+            commits_raw = response.data
+            break;
+        default:
+            if ('commits' in github.context.payload) {
+                commits_raw = github.context.payload['commits']
+            }
+    }
     const commits: Commit[] = []
     for (const commit of commits_raw) {
         commits.push(new Commit(commit))

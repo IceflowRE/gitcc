@@ -9,6 +9,7 @@ import {
     import_validator_cls,
     print_results
 } from './utility'
+import {GitHub} from "@actions/github/lib/utils"
 
 async function run(): Promise<void> {
     try {
@@ -28,10 +29,11 @@ async function run(): Promise<void> {
             core.setFailed("Please provide either 'validator' or 'validator_file'!")
             return
         }
+        const octokit: InstanceType<typeof GitHub> = github.getOctokit(access_token)
 
         let validator: CommitValidator
         if (validator_file !== "") {
-            const [validator_url, mjs_file] = await download_validator_file(validator_file, access_token)
+            const [validator_url, mjs_file] = await download_validator_file(validator_file, octokit)
             if (mjs_file === "") {
                 return
             }
@@ -42,7 +44,7 @@ async function run(): Promise<void> {
             validator = await get_shipped_validator(validator_name)
         }
 
-        const checks: Result[] = check_commits(get_commits(), validator)
+        const checks: Result[] = check_commits(await get_commits(octokit), validator)
         const all_ok: boolean = print_results(checks)
         if (all_ok) {
             core.info("All commits have the correct format!")

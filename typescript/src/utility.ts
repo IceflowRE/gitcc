@@ -1,9 +1,10 @@
-import {CommitValidator, Result, Status} from './commit-validator'
-import * as core from '@actions/core'
-import {Commit} from './commit'
-import {SimpleTag} from './validation'
-import * as github from "@actions/github";
 import * as fs from "fs";
+import * as core from '@actions/core'
+import * as github from "@actions/github";
+import {Commit} from './commit'
+import {CommitValidator, Result, Status} from './commit-validator'
+import {SimpleTag} from './validation'
+import {GitHub} from "@actions/github/lib/utils";
 
 export async function get_shipped_validator(validator: string): Promise<CommitValidator> {
     switch (validator) {
@@ -56,8 +57,7 @@ export function check_commits(commits: Commit[], validator: CommitValidator): Re
 }
 
 // return html url to validator file and local filepath to downloaded file
-export async function download_validator_file(validator_file: string, access_token: string): Promise<[string, string]> {
-    const octokit = github.getOctokit(access_token)
+export async function download_validator_file(validator_file: string, octokit: InstanceType<typeof GitHub>): Promise<[string, string]> {
     const response = await octokit.rest.repos.getContent({
         path: validator_file,
         owner: github.context.repo.owner,
