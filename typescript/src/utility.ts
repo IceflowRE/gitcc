@@ -74,7 +74,7 @@ export async function download_validator_file(validator_file: string, access_tok
         repo: github.context.repo.repo,
         ref: github.context.payload['head_commit']['id'],
     })
-    if (response.status != 200) {
+    if (response.status !== 200) {
         core.setFailed(`failed to retrieve validator file '${response.url}'`)
         return false
     }
