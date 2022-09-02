@@ -22,7 +22,7 @@ export class Commit {
     timestamp: Date | undefined = undefined
     message: string | undefined = undefined
 
-    constructor(commit: object, sha: string = "") {
+    constructor(commit: object, sha = "") {
         type key = keyof typeof commit
         this.author = new User(commit['author' as key])
         this.committer = new User(commit['committer' as key])
