@@ -22,12 +22,12 @@ export class Commit {
     timestamp: Date | undefined = undefined
     message: string | undefined = undefined
 
-    constructor(commit: object) {
+    constructor(commit: object, sha: string = "") {
         type key = keyof typeof commit
         this.author = new User(commit['author' as key])
         this.committer = new User(commit['committer' as key])
         this.distinct = commit['distinct' as key] ?? false
-        this.hexsha = commit['id' as key]
+        this.hexsha = commit['id' as key] ?? sha
         const timestamp_raw = commit['timestamp' as key]
         if (timestamp_raw !== undefined) {
             this.timestamp = new Date(timestamp_raw)
@@ -62,7 +62,7 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
                 return []
             }
             for (const raw_commit of response.data) {
-                commits.push(new Commit(raw_commit.commit))
+                commits.push(new Commit(raw_commit.commit, raw_commit.sha))
             }
             break
         }
