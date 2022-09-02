@@ -46,7 +46,7 @@ export function print_results(checks: Result[]): boolean {
 export function check_commits(commits: Commit[], validator: CommitValidator): Result[] {
     const checks: Result[] = []
     for (const commit of commits) {
-        const res: Result = validator.validate(commit)
+        const res: Result = validator.validate(commit) as Result
         if (res.commit !== undefined) {
             res.commit = commit
         }
@@ -62,7 +62,7 @@ export async function download_validator_file(validator_file: string, access_tok
         path: validator_file,
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
-        ref: github.context.payload['head_commit']['id'],
+        ref: github.context.payload["sha"],
     })
     if (response.status !== 200) {
         core.setFailed(`failed to retrieve validator file '${response.url}'`)

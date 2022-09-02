@@ -13,9 +13,6 @@ import {
 async function run(): Promise<void> {
     try {
         core.info(JSON.stringify(github.context))
-        core.info(JSON.stringify(github.context.repo.owner))
-        core.info(JSON.stringify(github.context.repo.repo))
-        core.info(JSON.stringify(github.context.payload['head_commit']['id']))
 
         const validator_file: string = core.getInput('validator_file')
         const validator_name: string = core.getInput('validator')
