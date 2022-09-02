@@ -23,7 +23,7 @@ jobs:
       - name: Commit Check (local)
         uses: ./
         with:
-          validator_file: "./typescript/example/simpleTag.mjs"
+          validator_file: "typescript/example/simpleTag.mjs"
 
   build-python:
     name: ${{ matrix.os }} Python ${{ matrix.python-version }}
