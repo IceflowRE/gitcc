@@ -68,15 +68,17 @@ export async function download_validator_file(validator_file: string, access_tok
         core.setFailed(`failed to retrieve validator file '${response.url}'`)
         return ""
     }
-    if (!Array.isArray(response)) {
+    if (Array.isArray(response.data)) {
         core.setFailed(`given path '${response.url}' was a directory`)
         return ""
     }
-    if(!("content" in response.data)) {
+    if (!("content" in response.data)) {
         core.setFailed(`download of '${response.url}' failed`)
         return ""
     }
     const buffer = Buffer.from(response.data.content, 'base64').toString('utf-8')
-    fs.writeFile("./validator.mjs", buffer, err => { if (err) throw err })
+    fs.writeFile("./validator.mjs", buffer, err => {
+        if (err) throw err
+    })
     return "./validator.mjs"
 }
