@@ -24,6 +24,11 @@ jobs:
         uses: ./
         with:
           validator_file: "typescript/example/simpleTag.mjs"
+      - name: ls
+        if: always()
+        shell: bash
+        run: |
+          ls -lR
 
   build-python:
     name: ${{ matrix.os }} Python ${{ matrix.python-version }}
