@@ -17,6 +17,7 @@ export class Result {
         this.commit = commit
     }
 
+    // @ts-ignore
     public toString(): string {
         let msg: string = this.status.toString()
         if (this.commit !== undefined) {
