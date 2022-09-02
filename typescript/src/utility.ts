@@ -80,5 +80,5 @@ export async function download_validator_file(validator_file: string, access_tok
     fs.writeFile("./validator.mjs", buffer, err => {
         if (err) throw err
     })
-    return "./validator.mjs"
+    return "../../../validator.mjs"
 }
