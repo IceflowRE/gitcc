@@ -6,14 +6,15 @@ import {check_commits, get_validator, print_results} from './utility'
 
 async function run(): Promise<void> {
     try {
-        core.info(JSON.stringify(github.context.payload['commits']))
-        core.info(JSON.stringify(github.context.payload['head_commit']))
-        core.info(JSON.stringify(github.context.eventName))
+        core.info(JSON.stringify(github.context))
 
         const validator_file: string = core.getInput('validator_file')
         const validator_name: string = core.getInput('validator')
+        const token: string = core.getInput('access_token')
+        // just to be sure
+        core.setSecret(token)
 
-        const octokit = github.getOctokit("")
+        const octokit = github.getOctokit(token)
         const data = await octokit.rest.repos.getContent({
             path: validator_file,
             owner: github.context.repo.owner,
