@@ -1,10 +1,10 @@
-import * as fs from "fs";
+import * as fs from "fs"
 import * as core from '@actions/core'
-import * as github from "@actions/github";
+import * as github from "@actions/github"
 import {Commit} from './commit'
 import {CommitValidator, Result, Status} from './commit-validator'
 import {SimpleTag} from './validation'
-import {GitHub} from "@actions/github/lib/utils";
+import {GitHub} from "@actions/github/lib/utils"
 
 export async function get_shipped_validator(validator: string): Promise<CommitValidator> {
     switch (validator) {
