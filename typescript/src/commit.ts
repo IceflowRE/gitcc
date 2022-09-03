@@ -1,6 +1,3 @@
-import * as github from '@actions/github'
-import {GitHub} from "@actions/github/lib/utils"
-
 export class User {
     email: string | undefined = undefined
     name: string | undefined = undefined

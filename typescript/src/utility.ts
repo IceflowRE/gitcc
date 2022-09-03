@@ -23,7 +23,7 @@ export async function import_validator_cls(validator_file: string): Promise<type
     return validation.createValidator()
 }
 
-export function print_results(checks: Result[]) {
+export function print_results(checks: Result[]): void {
     let all_ok = true
     for (const check of checks) {
         const msg: string = check.toString()
