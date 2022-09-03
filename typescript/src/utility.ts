@@ -95,11 +95,12 @@ export async function get_commit_creation(octokit: InstanceType<typeof GitHub>):
     })
     if (response.status !== 200) {
         core.error(JSON.stringify(response.data))
-        return ""
+        throw Error("Did not found creation date!")
     }
     if (Array.isArray(response.data)) {
-        return ""
+        throw Error("Commit creation date contained an array!")
     }
+    core.info(JSON.stringify(response.data))
     return response.data["committer"]["date"]
 }
 
@@ -107,8 +108,7 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
     const commits: Commit[] = []
     switch (github.context.eventName) {
         case 'pull_request': {
-            const pages = github.context.payload.pull_request?.commits % 100 + 1
-            core.info(pages.toString())
+            const pages = Math.floor(github.context.payload.pull_request?.commits / 100) + 1
             for (let page = 1; page <= pages; page++) {
                 const response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
                     owner: github.context.payload.pull_request?.head.repo.owner.login,
@@ -118,8 +118,6 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
                     per_page: 100,
                     page,
                 })
-                core.info(response.url)
-                core.info(JSON.stringify(response.data))
                 if (response.status !== 200) {
                     core.error(JSON.stringify(response.data))
                     return []
