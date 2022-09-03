@@ -65,7 +65,7 @@ export async function download_validator_file(validator_file: string, octokit: I
         path: validator_file,
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
-        ref: github.context.payload["sha"],
+        ref: github.context.sha,
     })
     core.info(JSON.stringify(response))
     if (response.status !== 200) {
