@@ -115,7 +115,7 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
                     sha: github.context.payload.pull_request?.head.ref,
                     since: await get_commit_creation(octokit),
                     per_page: 100,
-                    page: page,
+                    page,
                 })
                 if (response.status !== 200) {
                     core.error(JSON.stringify(response.data))
