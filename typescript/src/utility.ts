@@ -97,10 +97,11 @@ export async function get_commit_creation(octokit: InstanceType<typeof GitHub>):
         core.error(JSON.stringify(response.data))
         throw Error("Did not found creation date!")
     }
+    core.info(JSON.stringify(response.data))
+    core.info(response.url)
     if (Array.isArray(response.data)) {
         throw Error("Commit creation date contained an array!")
     }
-    core.info(JSON.stringify(response.data))
     return response.data["committer"]["date"]
 }
 
