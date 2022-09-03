@@ -88,10 +88,10 @@ export async function download_validator_file(validator_file: string, octokit: I
 }
 
 export async function get_commit_creation(octokit: InstanceType<typeof GitHub>): Promise<string> {
-    const response = await octokit.request('GET /repos/{owner}/{repo}/git/commits', {
+    const response = await octokit.request('GET /repos/{owner}/{repo}/git/commits/{commit_sha}', {
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
-        sha: github.context.payload.pull_request?.base.sha,
+        commit_sha: github.context.payload.pull_request?.base.sha,
     })
     if (response.status !== 200) {
         core.error(JSON.stringify(response.data))
