@@ -26,6 +26,7 @@ async function run(): Promise<void> {
 
         let validator: CommitValidator
         if (validator_file !== "") {
+            core.info("validator path")
             const [validator_url, mjs_file] = await utils.download_validator_file(validator_file, octokit)
             core.info(validator_url)
             core.info(mjs_file)
