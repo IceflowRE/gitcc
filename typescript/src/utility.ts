@@ -123,7 +123,7 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
                 }
                 for (const raw_commit of response.data) {
                     // skip base commit
-                    if (raw_commit.sha == github.context.payload.base.sha) {
+                    if (raw_commit.sha === github.context.payload.base.sha) {
                         continue
                     }
                     commits.push(new Commit(raw_commit.commit, raw_commit.sha, raw_commit.commit.committer?.date))
