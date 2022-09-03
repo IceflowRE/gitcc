@@ -68,7 +68,7 @@ export async function download_validator_file(validator_file: string, octokit: I
         ref: github.context.payload["sha"],
     })
     if (response.status !== 200) {
-        core.error(response.data.toString())
+        core.error(JSON.stringify(response.data))
         core.setFailed(`failed to retrieve validator file '${response.url}'`)
         return ["", ""]
     }
@@ -94,7 +94,7 @@ export async function get_commit_creation(octokit: InstanceType<typeof GitHub>):
         sha: github.context.payload.pull_request?.base.sha,
     })
     if (response.status !== 200) {
-        core.error(response.data.toString())
+        core.error(JSON.stringify(response.data))
         return ""
     }
     if (Array.isArray(response.data)) {
@@ -118,7 +118,7 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
                     page: page,
                 })
                 if (response.status !== 200) {
-                    core.error(response.data.toString())
+                    core.error(JSON.stringify(response.data))
                     return []
                 }
                 for (const raw_commit of response.data) {
