@@ -108,6 +108,7 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
     switch (github.context.eventName) {
         case 'pull_request': {
             const pages = github.context.payload.pull_request?.commits % 100 + 1
+            core.info(pages.toString())
             for (let page = 1; page <= pages; page++) {
                 const response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
                     owner: github.context.payload.pull_request?.head.repo.owner.login,
@@ -117,6 +118,8 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
                     per_page: 100,
                     page,
                 })
+                core.info(response.url)
+                core.info(JSON.stringify(response.data))
                 if (response.status !== 200) {
                     core.error(JSON.stringify(response.data))
                     return []
