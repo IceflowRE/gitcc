@@ -67,7 +67,6 @@ export async function download_validator_file(validator_file: string, octokit: I
         repo: github.context.repo.repo,
         ref: github.context.sha,
     })
-    core.info(JSON.stringify(response))
     if (response.status !== 200) {
         core.error(JSON.stringify(response.data))
         core.setFailed(`failed to retrieve validator file '${response.url}'`)
@@ -89,7 +88,6 @@ export async function download_validator_file(validator_file: string, octokit: I
 }
 
 export async function get_commit_creation(octokit: InstanceType<typeof GitHub>): Promise<string> {
-    core.info("get commit")
     const response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
@@ -99,7 +97,6 @@ export async function get_commit_creation(octokit: InstanceType<typeof GitHub>):
         core.error(JSON.stringify(response.data))
         return ""
     }
-    core.info(JSON.stringify(response.data))
     if (Array.isArray(response.data)) {
         return ""
     }
@@ -111,7 +108,6 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
     switch (github.context.eventName) {
         case 'pull_request': {
             const pages = github.context.payload.pull_request?.commits % 100 + 1
-            core.info("pull req")
             for (let page = 1; page <= pages; page++) {
                 const response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
                     owner: github.context.payload.pull_request?.head.repo.owner.login,
@@ -125,7 +121,6 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
                     core.error(JSON.stringify(response.data))
                     return []
                 }
-                core.info(JSON.stringify(response.data))
                 for (const raw_commit of response.data) {
                     commits.push(new Commit(raw_commit.commit, raw_commit.sha, raw_commit.commit.committer?.date))
                 }

@@ -6,8 +6,6 @@ import {GitHub} from "@actions/github/lib/utils"
 
 async function run(): Promise<void> {
     try {
-        core.info(JSON.stringify(github.context))
-
         const validator_file: string = core.getInput('validator_file')
         const validator_name: string = core.getInput('validator')
         const access_token: string = core.getInput('access_token')
@@ -26,10 +24,7 @@ async function run(): Promise<void> {
 
         let validator: CommitValidator
         if (validator_file !== "") {
-            core.info("validator path")
             const [validator_url, mjs_file] = await utils.download_validator_file(validator_file, octokit)
-            core.info(validator_url)
-            core.info(mjs_file)
             if (mjs_file === "") {
                 return
             }
