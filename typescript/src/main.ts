@@ -1,14 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import {get_commits} from './commit'
 import {CommitValidator, Result} from './commit-validator'
-import {
-    check_commits,
-    download_validator_file,
-    get_shipped_validator,
-    import_validator_cls,
-    print_results
-} from './utility'
+import * as utils from './utility'
 import {GitHub} from "@actions/github/lib/utils"
 
 async function run(): Promise<void> {
@@ -33,24 +26,26 @@ async function run(): Promise<void> {
 
         let validator: CommitValidator
         if (validator_file !== "") {
-            const [validator_url, mjs_file] = await download_validator_file(validator_file, octokit)
+            const [validator_url, mjs_file] = await utils.download_validator_file(validator_file, octokit)
+            core.info(validator_url)
+            core.info(mjs_file)
             if (mjs_file === "") {
                 return
             }
             core.info(`Using validator from '${validator_url}'`)
-            validator = new (await import_validator_cls(mjs_file))()
+            validator = new (await utils.import_validator_cls(mjs_file))()
         } else {
             core.info(`Using shipped validator '${validator_name}'`)
-            validator = await get_shipped_validator(validator_name)
+            validator = await utils.get_shipped_validator(validator_name)
         }
 
-        const checks: Result[] = check_commits(await get_commits(octokit), validator)
-        const all_ok: boolean = print_results(checks)
-        if (all_ok) {
-            core.info("All commits have the correct format!")
-        } else {
-            core.setFailed("Not all commits were correct!")
+        const commits = await utils.get_commits(octokit)
+        if (commits.length === 0) {
+            core.setFailed("No commits were found!")
+            return
         }
+        const checks: Result[] = utils.check_commits(await utils.get_commits(octokit), validator)
+        utils.print_results(checks)
     } catch (error) {
         if (error instanceof Error) core.setFailed(error.message)
     }

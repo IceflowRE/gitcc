@@ -23,8 +23,7 @@ export async function import_validator_cls(validator_file: string): Promise<type
     return validation.createValidator()
 }
 
-// Return true when not one check was a failure.
-export function print_results(checks: Result[]): boolean {
+export function print_results(checks: Result[]) {
     let all_ok = true
     for (const check of checks) {
         const msg: string = check.toString()
@@ -41,7 +40,11 @@ export function print_results(checks: Result[]): boolean {
         }
         all_ok = all_ok && check.status !== Status.Failure
     }
-    return all_ok
+    if (all_ok) {
+        core.info("All commits have the correct format!")
+    } else {
+        core.setFailed("Not all commits were correct!")
+    }
 }
 
 export function check_commits(commits: Commit[], validator: CommitValidator): Result[] {
@@ -65,6 +68,7 @@ export async function download_validator_file(validator_file: string, octokit: I
         ref: github.context.payload["sha"],
     })
     if (response.status !== 200) {
+        core.error(response.data.toString())
         core.setFailed(`failed to retrieve validator file '${response.url}'`)
         return ["", ""]
     }
@@ -81,4 +85,56 @@ export async function download_validator_file(validator_file: string, octokit: I
         if (err) throw err
     })
     return [response.data.html_url || "", "../../validator.mjs"]
+}
+
+export async function get_commit_creation(octokit: InstanceType<typeof GitHub>): Promise<string> {
+    const response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        sha: github.context.payload.pull_request?.base.sha,
+    })
+    if (response.status !== 200) {
+        core.error(response.data.toString())
+        return ""
+    }
+    if (Array.isArray(response.data)) {
+        return ""
+    }
+    return response.data["committer"]["date"]
+}
+
+export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise<Commit[]> {
+    const commits: Commit[] = []
+    switch (github.context.eventName) {
+        case 'pull_request': {
+            const pages = github.context.payload.pull_request?.commits % 100 + 1
+            for (let page = 1; page <= pages; page++) {
+                const response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
+                    owner: github.context.payload.pull_request?.head.repo.owner.login,
+                    repo: github.context.payload.pull_request?.head.repo.name,
+                    sha: github.context.payload.pull_request?.head.ref,
+                    since: await get_commit_creation(octokit),
+                    per_page: 100,
+                    page: page,
+                })
+                if (response.status !== 200) {
+                    core.error(response.data.toString())
+                    return []
+                }
+                for (const raw_commit of response.data) {
+                    commits.push(new Commit(raw_commit.commit, raw_commit.sha, raw_commit.commit.committer?.date))
+                }
+            }
+            break
+        }
+        case 'push':
+        default: {
+            if ('commits' in github.context.payload) {
+                for (const commit of github.context.payload['commits']) {
+                    commits.push(new Commit(commit))
+                }
+            }
+        }
+    }
+    return commits
 }
