@@ -88,7 +88,7 @@ export async function download_validator_file(validator_file: string, octokit: I
 }
 
 export async function get_commit_creation(octokit: InstanceType<typeof GitHub>): Promise<string> {
-    const response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
+    const response = await octokit.request('GET /repos/{owner}/{repo}/git/commits', {
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
         sha: github.context.payload.pull_request?.base.sha,
@@ -97,8 +97,6 @@ export async function get_commit_creation(octokit: InstanceType<typeof GitHub>):
         core.error(JSON.stringify(response.data))
         throw Error("Did not found creation date!")
     }
-    core.info(JSON.stringify(response.data))
-    core.info(response.url)
     if (Array.isArray(response.data)) {
         throw Error("Commit creation date contained an array!")
     }
