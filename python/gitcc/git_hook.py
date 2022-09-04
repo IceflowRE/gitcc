@@ -2,7 +2,8 @@ from pathlib import Path
 from typing import Callable, Optional
 
 
-def install_message_git_hook(project_dir: Path, force: bool = False, validator: Optional[str] = None, validator_file: Optional[Path] = None) -> None:
+def install_message_git_hook(project_dir: Path, force: bool = False, validator: Optional[str] = None,
+                             validator_file: Optional[Path] = None) -> None:
     """
     Install git summary hook.
 
@@ -15,12 +16,12 @@ def install_message_git_hook(project_dir: Path, force: bool = False, validator: 
     hook_file: Path = project_dir.joinpath(".git/hooks/commit-msg")
     if not force and hook_file.exists():
         raise FileExistsError("A commit message hook already exist!")
-    hook: str = '#!/usr/bin/env bash\ngitcc '
+    hook: str = '#!/usr/bin/env bash\ngitcc'
     if validator is not None:
-        hook += f"--validator {validator}"
+        hook += f" --validator {validator}"
     elif validator_file is not None:
-        hook += f"--validator_file {validator_file}"
-    hook += 'message --file "$1"'
+        hook += f" --validator_file {validator_file}"
+    hook += ' message --file "$1"'
     hook_file.write_text(hook)
 
 
@@ -44,7 +45,8 @@ GIT_HOOKS: dict[str, dict[str, Callable]] = {  # noqa: PLR6101, WPS407
 }
 
 
-def cmd_git_hook(repo: Path, action: str, hooks: list[str], force: bool = False, validator: Optional[str] = None, validator_file: Optional[Path] = None) -> int:
+def cmd_git_hook(repo: Path, action: str, hooks: list[str], force: bool = False, validator: Optional[str] = None,
+                 validator_file: Optional[Path] = None) -> int:
     """
     Execute git hooks.
 
