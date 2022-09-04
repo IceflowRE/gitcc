@@ -46,7 +46,10 @@ export class Result {
 }
 
 export class CommitValidator {
-    constructor(_options: string[]) {}
+    protected options: string[]
+    constructor(options: string[]) {
+        this.options = options
+    }
 
     static split_message(message: string): [string, string] {
         const res: string[] = message.split('\n', 1)

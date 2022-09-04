@@ -3,7 +3,7 @@ import * as github from '@actions/github'
 import {CommitValidator, Result} from './commit-validator'
 import {GitHub} from "@actions/github/lib/utils"
 import * as utils from './utils'
-import * as gh_utils from './gh_utils'
+import * as gh_utils from './gh-utils'
 
 async function run(): Promise<void> {
     try {

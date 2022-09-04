@@ -16,9 +16,9 @@ export async function get_shipped_validator_cls(validator: string): Promise<type
 const _importDynamic = new Function('modulePath', 'return import(modulePath)')
 
 export async function import_validator_cls(validator_file: string): Promise<typeof CommitValidator> {
-    const validation = await _importDynamic(validator_file)
-    validation.import_types(CommitValidator, Commit, Result, Status)
-    return validation.createValidator()
+    const validation_mod = await _importDynamic(validator_file)
+    validation_mod.import_types(CommitValidator, Commit, Result, Status)
+    return validation_mod.createValidator()
 }
 
 export function check_commits(commits: Commit[], validator: CommitValidator): Result[] {
