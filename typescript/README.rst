@@ -21,15 +21,19 @@ Usage
         access_token: ''
         # Filepath to an own validator. On how to write your own, see below.
         validator_file: ''
-
         # Name of an validator which is shipped with gitcc. Valid names: SimpleTag
         validator: ''
+        # Each line is passed as an entry of a list to the validator.
+        options: ''
 
 Shipped validators
 ------------------
 
 SimpleTag
     Format: ``[<tag>] <Good Description>`` (e.g. ``[ci] Fix testing suite installation``)
+RegEx
+    Pass two lines to parameter ``options``, first line is a regex for summary, second line is description.
+    Using ``>any<`` means it accepts anything.
 
 Custom validators
 -----------------
@@ -40,7 +44,10 @@ Your validator will inherit from `CommitValidator <./src/commit-validator.ts#L35
 
 You have to always return a `Result <./src/commmit-validator.ts#L9>`__. Only ``Status.Failure`` will result into an error.
 
-`CommitValidator <./src/commit-validator.ts#L35>`__ provides the following functions.
+`CommitValidator <./src/commit-validator.ts#L35>`__ provides the following constructor/functions.
+
+- ``constructor(options: string[])``
+    Get options passed to the GitHub workflow
 
 - ``split_message(message: string): [string, string]``
     Will split the message into summary and description.

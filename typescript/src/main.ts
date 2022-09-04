@@ -1,14 +1,15 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {CommitValidator, Result} from './commit-validator'
+import {GitHub} from "@actions/github/lib/utils"
 import * as utils from './utils'
 import * as gh_utils from './gh_utils'
-import {GitHub} from "@actions/github/lib/utils"
 
 async function run(): Promise<void> {
     try {
         const validator_file: string = core.getInput('validator_file')
         const validator_name: string = core.getInput('validator')
+        const options: string[] = core.getMultilineInput('options')
         const access_token: string = core.getInput('access_token')
         // just to be sure
         core.setSecret(access_token)
@@ -30,10 +31,10 @@ async function run(): Promise<void> {
                 return
             }
             core.info(`Using validator from '${validator_url}'`)
-            validator = new (await utils.import_validator_cls(mjs_file))()
+            validator = new (await utils.import_validator_cls(mjs_file))(options)
         } else {
             core.info(`Using shipped validator '${validator_name}'`)
-            validator = await utils.get_shipped_validator(validator_name)
+            validator = new (await utils.get_shipped_validator_cls(validator_name))(options)
         }
 
         const commits = await gh_utils.get_commits(octokit)

@@ -30,3 +30,37 @@ export class SimpleTag extends CommitValidator {
         return new Result(Status.Ok)
     }
 }
+
+export class RegEx extends CommitValidator {
+    private readonly rx_summary: RegExp | undefined = undefined
+    private readonly rx_description: RegExp | undefined = undefined
+
+    constructor(options: string[]) {
+        super(options)
+        if (options.length < 2) {
+            throw Error("RegEx validator expects at least two arguments")
+        }
+        if (options[0] !== ">any<") {
+            this.rx_summary = new RegExp(options[0])
+        }
+        if (options[1] !== ">any<") {
+            this.rx_description = new RegExp(options[1])
+        }
+    }
+
+    validate_message(summary: string, description: string): Result {
+        if (this.rx_summary !== undefined && !this.rx_summary.test(summary)) {
+            return new Result(
+                Status.Failure,
+                `Invalid summary, does not match RegEx '${this.rx_summary.source}'`
+            )
+        }
+        if (this.rx_description !== undefined && !this.rx_description.test(description)) {
+            return new Result(
+                Status.Failure,
+                `Invalid description, does not match RegEx '${this.rx_description.source}'`
+            )
+        }
+        return new Result(Status.Ok)
+    }
+}

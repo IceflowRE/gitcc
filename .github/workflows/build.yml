@@ -16,10 +16,17 @@ jobs:
         working-directory: ./typescript
         run: |
           npm run all
-      - name: Commit Check (shipped)
+      - name: Commit Check (shipped SimpleTag)
         uses: ./
         with:
           validator: "SimpleTag"
+      - name: Commit Check (shipped RegEx)
+        uses: ./
+        with:
+          validator: "RegEx"
+          options: |
+            >any<
+            >any<
       - name: Commit Check (local)
         if: success() || failure()
         uses: ./

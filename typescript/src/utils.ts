@@ -1,11 +1,13 @@
 import {Commit} from './commit'
 import {CommitValidator, Result, Status} from './commit-validator'
-import {SimpleTag} from './validation'
+import * as validation from './validation'
 
-export async function get_shipped_validator(validator: string): Promise<CommitValidator> {
-    switch (validator) {
-        case 'SimpleTag':
-            return new SimpleTag()
+export async function get_shipped_validator_cls(validator: string): Promise<typeof CommitValidator> {
+    switch (validator.toLowerCase()) {
+        case 'simpletag':
+            return validation.SimpleTag
+        case 'regex':
+            return validation.RegEx
         default:
             throw Error('Invalid validator name!')
     }
