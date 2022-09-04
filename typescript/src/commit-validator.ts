@@ -17,8 +17,21 @@ export class Result {
         this.commit = commit
     }
 
-    toString(): string {
+    toString(colored = false): string {
         let msg: string = this.status.toString()
+        if (colored) {
+            switch (this.status) {
+                case Status.Failure:
+                    msg = `\u001b[31;47m${msg}\u001b[0m`
+                    break
+                case Status.Warning:
+                    msg = `\u001b[33;47m${msg}\u001b[0m`
+                    break
+                case Status.Ok:
+                    msg = `\u001b[32;47m${msg}\u001b[0m`
+                    break
+            }
+        }
         if (this.commit !== undefined) {
             msg += ` | ${this.commit.hexsha} - ${this.commit.summary()}`
         }

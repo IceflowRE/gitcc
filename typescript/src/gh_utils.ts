@@ -1,63 +1,11 @@
-import * as fs from "fs"
-import * as core from '@actions/core'
-import * as github from "@actions/github"
-import {Commit} from './commit'
-import {CommitValidator, Result, Status} from './commit-validator'
-import {SimpleTag} from './validation'
-import {GitHub} from "@actions/github/lib/utils"
+// GitHub support utility.
 
-export async function get_shipped_validator(validator: string): Promise<CommitValidator> {
-    switch (validator) {
-        case 'SimpleTag':
-            return new SimpleTag()
-        default:
-            throw Error('Invalid validator name!')
-    }
-}
-
-const _importDynamic = new Function('modulePath', 'return import(modulePath)')
-
-export async function import_validator_cls(validator_file: string): Promise<typeof CommitValidator> {
-    const validation = await _importDynamic(validator_file)
-    validation.import_types(CommitValidator, Commit, Result, Status)
-    return validation.createValidator()
-}
-
-export function print_results(checks: Result[]): void {
-    let all_ok = true
-    for (const check of checks) {
-        const msg: string = check.toString()
-        switch (check.status) {
-            case Status.Ok:
-                core.info(msg)
-                break
-            case Status.Warning:
-                core.warning(msg)
-                break
-            case Status.Failure:
-                core.error(msg)
-                break
-        }
-        all_ok = all_ok && check.status !== Status.Failure
-    }
-    if (all_ok) {
-        core.info("All commits have the correct format!")
-    } else {
-        core.setFailed("Not all commits were correct!")
-    }
-}
-
-export function check_commits(commits: Commit[], validator: CommitValidator): Result[] {
-    const checks: Result[] = []
-    for (const commit of commits) {
-        const res: Result = validator.validate(commit)
-        if (res.commit === undefined) {
-            res.commit = commit
-        }
-        checks.push(validator.validate(commit))
-    }
-    return checks
-}
+import {GitHub} from "@actions/github/lib/utils";
+import * as github from "@actions/github";
+import * as core from "@actions/core";
+import fs from "fs";
+import {Commit} from "./commit";
+import {Result, Status} from "./commit-validator";
 
 // return html url to validator file and local filepath to downloaded file
 export async function download_validator_file(validator_file: string, octokit: InstanceType<typeof GitHub>): Promise<[string, string]> {
@@ -141,4 +89,28 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
         }
     }
     return commits
+}
+
+export function print_results(checks: Result[]): void {
+    let all_ok = true
+    for (const check of checks) {
+        const msg: string = check.toString(true)
+        switch (check.status) {
+            case Status.Ok:
+                core.info(msg)
+                break
+            case Status.Warning:
+                core.warning(msg)
+                break
+            case Status.Failure:
+                core.error(msg)
+                break
+        }
+        all_ok = all_ok && check.status !== Status.Failure
+    }
+    if (all_ok) {
+        core.info("\u001b[32;47mAll commits have the correct format!")
+    } else {
+        core.setFailed("`\u001b[31;47mNot all commits were correct!")
+    }
 }

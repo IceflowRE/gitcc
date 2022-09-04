@@ -1,7 +1,8 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {CommitValidator, Result} from './commit-validator'
-import * as utils from './utility'
+import * as utils from './utils'
+import * as gh_utils from './gh_utils'
 import {GitHub} from "@actions/github/lib/utils"
 
 async function run(): Promise<void> {
@@ -24,7 +25,7 @@ async function run(): Promise<void> {
 
         let validator: CommitValidator
         if (validator_file !== "") {
-            const [validator_url, mjs_file] = await utils.download_validator_file(validator_file, octokit)
+            const [validator_url, mjs_file] = await gh_utils.download_validator_file(validator_file, octokit)
             if (mjs_file === "") {
                 return
             }
@@ -35,13 +36,13 @@ async function run(): Promise<void> {
             validator = await utils.get_shipped_validator(validator_name)
         }
 
-        const commits = await utils.get_commits(octokit)
+        const commits = await gh_utils.get_commits(octokit)
         if (commits.length === 0) {
             core.setFailed("No commits were found!")
             return
         }
-        const checks: Result[] = utils.check_commits(await utils.get_commits(octokit), validator)
-        utils.print_results(checks)
+        const checks: Result[] = utils.check_commits(commits, validator)
+        gh_utils.print_results(checks)
     } catch (error) {
         if (error instanceof Error) core.setFailed(error.message)
     }
