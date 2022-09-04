@@ -7,7 +7,7 @@ from git.objects import Commit
 from gitcc.commit_validator import CommitValidator, Result, Status
 
 
-def load_validator_file(validator_file: Path) -> CommitValidator:
+def import_validator_from_file(validator_file: Path) -> CommitValidator:
     """
     Load a validator from given python file.
     """
@@ -16,7 +16,7 @@ def load_validator_file(validator_file: Path) -> CommitValidator:
     return scope['Validator']()
 
 
-def load_validator(validator_module: str) -> CommitValidator:
+def import_validator(validator_module: str) -> CommitValidator:
     """
     Load a validator from given import path.
     """
@@ -26,13 +26,13 @@ def load_validator(validator_module: str) -> CommitValidator:
 
 def print_results(checks: list[Result], include_correct: bool = False) -> bool:
     """
-    Return true when all results were ok.
+    Return true when not one check was a failure.
     """
     all_ok: bool = True
     for check in checks:
         if check.status != Status.Ok or include_correct:
             print(check)
-        all_ok = all_ok and check.status == Status.Ok
+        all_ok = all_ok and check.status != Status.Failure
     return all_ok
 
 

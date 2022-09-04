@@ -9,12 +9,14 @@ GitCC
 
 GitCC checks commit messages for certain rules.
 
-GitCC is available as a Python implementation, which provides a CLI and local git hooks.
-`Python version <./python/README.rst>`__
-For a GitHub Actions implementation, when only used in CI, refer to
-`Javascript version <./python/README.rst>`__
 
-----
+GitCC is available as a Python implementation, which provides a CLI and local git hooks.
+
+`Python version <./python/README.rst>`__
+
+For use in GitHub Actions refer to
+
+`GitCC GitHub Actions <./typescript/README.rst>`__
 
 Web
 ===
@@ -29,7 +31,7 @@ Credits
         - iceflower@gmx.de
 
 License
--------
+=======
 
 Copyright 2021-present Iceflower S (iceflower@gmx.de)
 
@@ -43,7 +45,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 .. |maintained| image:: https://img.shields.io/badge/maintained-yes-brightgreen.svg
 
-.. |programming language| image:: https://img.shields.io/badge/language-Python_3.10%20/%20Javascript-orange.svg
+.. |programming language| image:: https://img.shields.io/badge/language-Python_3.10%20/%20Typescript-orange.svg
 
 .. |license| image:: https://img.shields.io/badge/License-MIT-blue.svg
    :target: https://github.com/IceflowRE/gitcc/blob/main/LICENSE.rst

@@ -1,4 +1,4 @@
-name: Commit Naming (Python)
+name: Commit Check
 on:
   pull_request:
     branches:
@@ -8,8 +8,8 @@ on:
       - main
 
 jobs:
-  naming:
-    name: Commit Naming
+  commit-check-python:
+    name: Commit Check (Python)
     runs-on: ubuntu-latest
     container: python:alpine
     steps:
@@ -36,6 +36,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install gitcc
+        working-directory: ./python
         run: |
           pip install .
 
@@ -43,10 +44,10 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           git config --global --add safe.directory `pwd`
-          gitcc history --verbose ./
+          gitcc --validator gitcc.validation.SimpleTag history --verbose ./
 
       - name: Check commit (Push)
         if: ${{ github.event_name == 'push' }}
         run: |
           git config --global --add safe.directory `pwd`
-          gitcc commit ./
+          gitcc --validator gitcc.validation.SimpleTag commit ./

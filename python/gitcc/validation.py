@@ -4,9 +4,9 @@ from typing import Optional
 from gitcc.commit_validator import CommitValidator, Result, Status
 
 
-class Default(CommitValidator):
+class SimpleTag(CommitValidator):
     """
-    Default validation based on pattern: '[<tag>] <Good Description>'.
+    Validation based on pattern: '[<tag>] <Good Description>'.
     """
 
     rx_parser: re.Pattern = re.compile(r"\[(.*)] (.*)")
