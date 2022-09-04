@@ -22,13 +22,13 @@ export class Result {
         if (colored) {
             switch (this.status) {
                 case Status.Failure:
-                    msg = `\u001b[31;47m${msg}\u001b[0m`
+                    msg = `\u001b[0;31m${msg}\u001b[0m`
                     break
                 case Status.Warning:
-                    msg = `\u001b[33;47m${msg}\u001b[0m`
+                    msg = `\u001b[0;33m${msg}\u001b[0m`
                     break
                 case Status.Ok:
-                    msg = `\u001b[32;47m${msg}\u001b[0m`
+                    msg = `\u001b[0;32m${msg}\u001b[0m`
                     break
             }
         }

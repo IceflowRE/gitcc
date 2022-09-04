@@ -109,8 +109,8 @@ export function print_results(checks: Result[]): void {
         all_ok = all_ok && check.status !== Status.Failure
     }
     if (all_ok) {
-        core.info("\u001b[32;47mAll commits have the correct format!")
+        core.info("\u001b[0;32mAll commits have the correct format!")
     } else {
-        core.setFailed("`\u001b[31;47mNot all commits were correct!")
+        core.setFailed("\u001b[0;31mNot all commits were correct!")
     }
 }
