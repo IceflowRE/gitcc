@@ -94,16 +94,15 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
 export function print_results(checks: Result[]): void {
     let all_ok = true
     for (const check of checks) {
-        const msg: string = check.toString(true)
         switch (check.status) {
             case Status.Ok:
-                core.info(msg)
+                core.info(check.toString(true))
                 break
             case Status.Warning:
-                core.warning(msg)
+                core.warning(check.toString())
                 break
             case Status.Failure:
-                core.error(msg)
+                core.setFailed(check.toString())
                 break
         }
         all_ok = all_ok && check.status !== Status.Failure
@@ -111,6 +110,6 @@ export function print_results(checks: Result[]): void {
     if (all_ok) {
         core.info("\u001b[0;32mAll commits have the correct format!")
     } else {
-        core.setFailed("\u001b[0;31mNot all commits were correct!")
+        core.info("\u001b[0;31mNot all commits were correct!")
     }
 }

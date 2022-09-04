@@ -21,6 +21,7 @@ jobs:
         with:
           validator: "SimpleTag"
       - name: Commit Check (shipped RegEx)
+        if: success() || failure()
         uses: ./
         with:
           validator: "RegEx"

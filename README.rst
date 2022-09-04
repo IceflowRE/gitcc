@@ -14,11 +14,9 @@ GitCC is available as a Python implementation, which provides a CLI and local gi
 
 `Python version <./python/README.rst>`__
 
-For a GitHub Actions implementation, when only used in CI, refer to
+For use in GitHub Actions refer to
 
-`Typescript version <./python/README.rst>`__
-
-----
+`GitCC GitHub Actions <./typescript/README.rst>`__
 
 Web
 ===

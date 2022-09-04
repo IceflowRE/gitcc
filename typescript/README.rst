@@ -42,7 +42,7 @@ Create somewhere in your repository a file (e.g. ``validator.mjs``) and use the 
 
 Your validator will inherit from `CommitValidator <./src/commit-validator.ts#L35>`__. Only implement the function you need, so it wont override the default behavior.
 
-You have to always return a `Result <./src/commmit-validator.ts#L9>`__. Only ``Status.Failure`` will result into an error.
+You have to always return a `Result <./src/commmit-validator.ts#L9>`__. Only ``Status.Failure`` will result into an CI error.
 
 `CommitValidator <./src/commit-validator.ts#L35>`__ provides the following constructor/functions.
 
