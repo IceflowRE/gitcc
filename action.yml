@@ -1,0 +1,23 @@
+name: 'Git Commit Check'
+description: 'Git commit check based on certain rules.'
+author: 'Iceflower S'
+branding:
+  icon: 'git-commit'
+  color: 'orange'
+inputs:
+  access_token:
+    required: false
+    description: 'Github private access token'
+    default: ${{ github.token }}
+  validator_file:
+    required: false
+    description: 'filepath to a validator file'
+  validator:
+    required: false
+    description: 'name of a validator which is shipped with GitCC (available: SimpleTag)'
+  options:
+    required: false
+    description: 'each line is passed as an entry of a list to the validator'
+runs:
+  using: 'node16'
+  main: 'typescript/dist/index.js'
