@@ -85,6 +85,9 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
                 for (const commit of github.context.payload['commits']) {
                     commits.push(new Commit(commit))
                 }
+                // on tags
+            } else if ('head_commit' in github.context.payload) {
+                commits.push(new Commit(github.context.payload['head_commit']))
             }
         }
     }

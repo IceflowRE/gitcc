@@ -1,8 +1,8 @@
 name: Deploy GitHub Actions
 on:
   push:
-    tags:
-      - '*'
+    branches:
+      - main
 
 env:
   gh_actions_git_path: './gh-actions/'
@@ -48,7 +48,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
-          git diff-index --quiet HEAD || git commit -am "[actions] Build of ${{ github.ref_name }}"
+          git diff-index --quiet HEAD || git commit -am "[actions] Build of ${{ github.sha }}"
           git push
 
   commit-check:
