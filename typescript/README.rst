@@ -94,7 +94,7 @@ Template
 
     export function createValidator() {
         return class Validator extends CommitValidator {
-            // PLACE HERE YOUR CODE
+            // PLACE YOUR CODE HERE
         }
     }
 
