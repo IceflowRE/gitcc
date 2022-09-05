@@ -265,6 +265,10 @@ function get_commits(octokit) {
                     for (const commit of github.context.payload['commits']) {
                         commits.push(new commit_1.Commit(commit));
                     }
+                    // on tags
+                }
+                else if ('head_commit' in github.context.payload) {
+                    commits.push(new commit_1.Commit(github.context.payload['head_commit']));
                 }
             }
         }
