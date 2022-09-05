@@ -1,11 +1,13 @@
 // GitHub support utility.
 
+import {resolve} from "path"
 import {GitHub} from "@actions/github/lib/utils";
 import * as github from "@actions/github";
 import * as core from "@actions/core";
 import fs from "fs";
 import {Commit} from "./commit";
 import {Result, Status} from "./commit-validator";
+import {pathToFileURL} from "url";
 
 // return html url to validator file and local filepath to downloaded file
 export async function download_validator_file(validator_file: string, octokit: InstanceType<typeof GitHub>): Promise<[string, string]> {
@@ -29,10 +31,11 @@ export async function download_validator_file(validator_file: string, octokit: I
         return ["", ""]
     }
     const buffer = Buffer.from(response.data.content, 'base64').toString('utf-8')
-    fs.writeFile("./validator.mjs", buffer, err => {
+    const output_path = pathToFileURL(resolve("./validator.mjs"))
+    fs.writeFile(output_path, buffer, err => {
         if (err) throw err
     })
-    return [response.data.html_url || "", "../../validator.mjs"]
+    return [response.data.html_url || "", output_path.toString()]
 }
 
 export async function get_commit_creation(octokit: InstanceType<typeof GitHub>): Promise<string> {

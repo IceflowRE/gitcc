@@ -75,6 +75,10 @@ Template
 
 .. code-block:: javascript
 
+    /*
+    Used in GitHub Actions for validate commits.
+     */
+
     let Commit
     let CommitValidator
     let Result

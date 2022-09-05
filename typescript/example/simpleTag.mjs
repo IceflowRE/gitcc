@@ -1,3 +1,7 @@
+/*
+Used in GitHub Actions to validate commits.
+ */
+
 let Commit
 let CommitValidator
 let Result
