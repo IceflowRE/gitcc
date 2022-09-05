@@ -7,7 +7,7 @@ GitCC
 
 ----
 
-GitCC checks commit messages for certain rules.
+GitCC checks commits for certain rules. For example commit messages.
 
 
 GitCC is available as a Python implementation, which provides a CLI and local git hooks.

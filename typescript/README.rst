@@ -35,6 +35,16 @@ RegEx
     Pass two lines to parameter ``options``, first line is a regex for summary, second line is description.
     Using ``>any<`` means it accepts anything.
 
+    .. code-block:: yml
+
+        - uses: IceflowRE/gitcc@v2
+          with:
+            validator: 'RegEx'
+            options: |
+              >any<
+              >any<
+
+
 Custom validators
 -----------------
 
