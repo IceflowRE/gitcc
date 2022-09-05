@@ -174,11 +174,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.print_results = exports.get_commits = exports.get_commit_creation = exports.download_validator_file = void 0;
+const path_1 = __nccwpck_require__(1017);
 const github = __importStar(__nccwpck_require__(5438));
 const core = __importStar(__nccwpck_require__(2186));
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 const commit_1 = __nccwpck_require__(3873);
 const commit_validator_1 = __nccwpck_require__(7273);
+const url_1 = __nccwpck_require__(7310);
 // return html url to validator file and local filepath to downloaded file
 function download_validator_file(validator_file, octokit) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -202,11 +204,12 @@ function download_validator_file(validator_file, octokit) {
             return ["", ""];
         }
         const buffer = Buffer.from(response.data.content, 'base64').toString('utf-8');
-        fs_1.default.writeFile("./validator.mjs", buffer, err => {
+        const output_path = (0, url_1.pathToFileURL)((0, path_1.resolve)("./validator.mjs"));
+        fs_1.default.writeFile(output_path, buffer, err => {
             if (err)
                 throw err;
         });
-        return [response.data.html_url || "", "../../validator.mjs"];
+        return [response.data.html_url || "", output_path.toString()];
     });
 }
 exports.download_validator_file = download_validator_file;
