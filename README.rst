@@ -57,7 +57,7 @@ You have to always return a `Result <./src/commmit-validator.ts#L9>`__. Only ``S
 `CommitValidator <./src/commit-validator.ts#L35>`__ provides the following constructor/functions.
 
 - ``constructor(options: string[])``
-    Get options passed to the GitHub workflow
+    Options passed to GitHub workflow.
 
 - ``split_message(message: string): [string, string]``
     Will split the message into summary and description.
@@ -68,7 +68,7 @@ You have to always return a `Result <./src/commmit-validator.ts#L9>`__. Only ``S
 - ``validate_message(summary: string, description: string): Result``
     For simple use cases when only the summary and description text has to be checked.
 
-Look here for the `Reference`_ and an example `here <./src/example/simpleTag.mjs>`__.
+Look here for the `Reference`_ and an example `here <./example/simpleTag.mjs>`__.
 
 Template
 ********
