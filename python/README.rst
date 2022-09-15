@@ -16,9 +16,15 @@ To use as a GitHub Actions refer to the ``commit-check-python`` section in `exam
 To expand gitcc to apply your own rules inherit from `gitcc.commit_validator.Validator <./gitcc/commit_validator.py>`__.
 If you use the ``--validator-file`` argument the Validator class in that file must be named ``Validator``.
 
+Shipped validators
+------------------
+
+gitcc.validation.SimpleTag
+    Format: ``[<tag>] <Good Description>`` (e.g. ``[ci] Fix testing suite installation``)
+
 ----
 
-gitcc [\-h] [\-v] [\-validator] [\-validator-file] {message, git-hook, commit, history, branch}
+gitcc [\-h] [\-v] [\-validator | \-validator-file] {message, git-hook, commit, history, branch}
 
 **validator** <Python import path>
         Python import path to Validator class.
@@ -133,6 +139,13 @@ gitcc [\-h] [\-v] [\-validator] [\-validator-file] {message, git-hook, commit, h
     ..
 
 ----
+
+Examples
+--------
+
+.. code-block:: shell
+
+    gitcc --validator gitcc.validation.SimpleTag message "Is this a valid message?"
 
 Web
 ===

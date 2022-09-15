@@ -37,6 +37,7 @@ jobs:
 
       - name: Install gitcc
         working-directory: ./python
+        # pip install gitcc
         run: |
           pip install .
 

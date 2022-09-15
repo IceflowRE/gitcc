@@ -16,7 +16,7 @@ def cmd_parser():
     """
     parser = ArgumentParser(prog="gitcc", description="")
     parser.add_argument('-v', '--version', action='version', version="gitcc 2.0.0")
-    parser_validator = parser.add_mutually_exclusive_group()
+    parser_validator = parser.add_mutually_exclusive_group(required=True)
     parser_validator.add_argument('--validator', dest='validator', type=str, default="",
                                   help='Python import path to Validator class.')
     parser_validator.add_argument('--validator-file', dest='validator_file', type=Path, default=None,
@@ -67,10 +67,8 @@ def main():  # noqa: D103, PLR0912, PLR1260
 
     if args.validator != "":
         validator = import_validator(args.validator)
-    elif args.validator_file is not None:
-        validator = import_validator_from_file(args.validator_file)
     else:
-        validator = CommitValidator()
+        validator = import_validator_from_file(args.validator_file)
 
     if args.command == 'message':
         if args.message_file:
