@@ -5,7 +5,7 @@ from typing import Optional
 
 from git import InvalidGitRepositoryError, Repo
 
-from gitcc.commit_validator import CommitValidator, Result, Status, split_message
+from gitcc.commit_validator import Result, Status, split_message
 from gitcc.git_hook import cmd_git_hook
 from gitcc.utility import check_branch, check_history, import_validator, import_validator_from_file, print_results
 
