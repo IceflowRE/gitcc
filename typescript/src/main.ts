@@ -13,6 +13,7 @@ async function run(): Promise<void> {
         const access_token: string = core.getInput('access_token')
         // just to be sure
         core.setSecret(access_token)
+        core.debug(JSON.stringify(github.context))
 
         if (validator_file !== '' && validator_name !== '') {
             core.setFailed("Please provide only 'validator' or 'validator_file'!")
