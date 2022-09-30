@@ -264,11 +264,11 @@ function get_commits(octokit) {
             }
             case 'push':
             default: {
-                if ('commits' in github.context.payload) {
+                if ('commits' in github.context.payload && github.context.payload['commits'].length > 0) {
                     for (const commit of github.context.payload['commits']) {
                         commits.push(new commit_1.Commit(commit));
                     }
-                    // on tags
+                    // on tags or if commits was empty
                 }
                 else if ('head_commit' in github.context.payload) {
                     commits.push(new commit_1.Commit(github.context.payload['head_commit']));
