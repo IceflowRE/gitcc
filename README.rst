@@ -50,11 +50,11 @@ Custom validators
 
 Create somewhere in your repository a file (e.g. ``validator.mjs``) and use the path in ``validator_file``.
 
-Your validator will inherit from `CommitValidator <./src/commit-validator.ts#L35>`__. Only implement the function you need, so it wont override the default behavior.
+Your validator will inherit from `CommitValidator <./src/commit-validator.ts#L48>`__. Only implement the function you need, so it wont override the default behavior.
 
-You have to always return a `Result <./src/commmit-validator.ts#L9>`__. Only ``Status.Failure`` will result into an CI error.
+You have to always return a `Result <./src/commmit-validator.ts#L48>`__. Only ``Status.Failure`` will result into an CI error.
 
-`CommitValidator <./src/commit-validator.ts#L35>`__ provides the following constructor/functions.
+`CommitValidator <./src/commit-validator.ts#L48>`__ provides the following constructor/functions.
 
 - ``constructor(options: string[])``
     Options passed to GitHub workflow.
@@ -68,7 +68,7 @@ You have to always return a `Result <./src/commmit-validator.ts#L9>`__. Only ``S
 - ``validate_message(summary: string, description: string): Result``
     For simple use cases when only the summary and description text has to be checked.
 
-Look here for the `Reference`_ and an example `here <./example/simpleTag.mjs>`__.
+Look here for the `Reference`_ and an basic example `here <./example/simpleTag.mjs>`__.
 
 Template
 ********
@@ -101,8 +101,8 @@ Template
 Reference
 ---------
 
-- `Commit <./src/commit.ts#L16>`__
-- `CommitValidator <./src/commit-validator.ts#L35>`__
+- `Commit <./src/commit.ts#L14>`__
+- `CommitValidator <./src/commit-validator.ts#L48>`__
 - `Result <./src/commmit-validator.ts#L9>`__
 - `Status <./src/commmit-validator.ts#L3>`__
 
