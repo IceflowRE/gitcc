@@ -205,10 +205,7 @@ function download_validator_file(validator_file, octokit) {
         }
         const buffer = Buffer.from(response.data.content, 'base64').toString('utf-8');
         const output_path = (0, url_1.pathToFileURL)((0, path_1.resolve)("./validator.mjs"));
-        fs_1.default.writeFile(output_path, buffer, err => {
-            if (err)
-                throw err;
-        });
+        fs_1.default.writeFileSync(output_path, buffer);
         return [response.data.html_url || "", output_path.toString()];
     });
 }
