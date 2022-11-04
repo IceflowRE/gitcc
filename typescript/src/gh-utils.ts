@@ -32,9 +32,7 @@ export async function download_validator_file(validator_file: string, octokit: I
     }
     const buffer = Buffer.from(response.data.content, 'base64').toString('utf-8')
     const output_path = pathToFileURL(resolve("./validator.mjs"))
-    fs.writeFile(output_path, buffer, err => {
-        if (err) throw err
-    })
+    fs.writeFileSync(output_path, buffer)
     return [response.data.html_url || "", output_path.toString()]
 }
 
