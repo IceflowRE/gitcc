@@ -61,6 +61,7 @@ def cmd_parser():
 
     return parser
 
+
 # pylint: disable-next=R0912
 def main() -> None:  # noqa: D103, PLR0912, PLR1260
     args = cmd_parser().parse_args(sys.argv[1:])
