@@ -24,15 +24,17 @@ gitcc.validation.SimpleTag
 
 ----
 
-gitcc [\-h] [\-v] [\-validator | \-validator-file] {message, git-hook, commit, history, branch}
+gitcc [\-h] [\-v] [\-\-validator | \-\-validator-file] {message, git-hook, commit, history, branch}
 
-**validator** <Python import path>
+**--validator** <Python import path>
         Python import path to Validator class.
+        Example: ``--validator gitcc.validation.SimpleTag``
 
     ..
 
-**validator-file** <file path>
+**--validator-file** <file path>
         Path to file with Validator..
+        Example: ``--validator-file my_validator.py``
 
     ..
 
