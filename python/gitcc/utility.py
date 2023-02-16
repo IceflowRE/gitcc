@@ -12,6 +12,7 @@ def import_validator_from_file(validator_file: Path) -> CommitValidator:
     Load a validator from given python file.
     """
     scope: dict = {}
+    # pylint: disable-next=W0122
     exec(compile(validator_file.read_text(), '<string>', 'exec'), scope)
     return scope['Validator']()
 
@@ -30,9 +31,9 @@ def print_results(checks: list[Result], include_correct: bool = False) -> bool:
     """
     all_ok: bool = True
     for check in checks:
-        if check.status != Status.Ok or include_correct:
+        if check.status != Status.OK or include_correct:
             print(check)
-        all_ok = all_ok and check.status != Status.Failure
+        all_ok = all_ok and check.status != Status.FAILURE
     return all_ok
 
 
@@ -56,7 +57,7 @@ def check_branch(validator: CommitValidator, repo: Repo, source_branch: str, tar
 
     common_ancestors: list[Commit] = cast(list[Commit], repo.merge_base(source_branch, target_branch))
     if not common_ancestors:
-        checks.append(Result(Status.Failure, "ERROR: No common ancestor found"))
+        checks.append(Result(Status.FAILURE, "ERROR: No common ancestor found"))
         return checks
 
     exit_commit: str = common_ancestors[0].hexsha

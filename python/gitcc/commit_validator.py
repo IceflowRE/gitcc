@@ -11,9 +11,9 @@ class Status(str, Enum):
     All none failures count as a success.
     """
 
-    Failure = "Failure"
-    Warning = "Warning"  # noqa: A003
-    Ok = "Correct"
+    FAILURE = "FAILURE"
+    WARNING = "WARNING"  # noqa: A003
+    OK = "Correct"
 
 
 @dataclass
@@ -22,11 +22,11 @@ class Result:
     Result of a commit check. Commit might be omitted when only a message is checked.
     """
 
-    status: Status = Status.Failure
+    status: Status = Status.FAILURE
     message: str = ""
     commit: Optional[Commit] = None
 
-    def __str__(self):  # noqa: D105
+    def __str__(self) -> str:  # noqa: D105
         msg: str = self.status.value
         if self.commit is not None:
             msg += f" | {self.commit.hexsha} - {str(self.commit.summary)}"
@@ -60,8 +60,8 @@ class CommitValidator:
         res.commit = commit
         return res
 
-    def validate_message(self, summary: str, description: str) -> Result:
+    def validate_message(self, _summary: str, _description: str) -> Result:
         """
         Check a commit message.
         """
-        return Result(Status.Ok, "")
+        return Result(Status.OK, "")

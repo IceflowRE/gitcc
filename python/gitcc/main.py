@@ -61,8 +61,8 @@ def cmd_parser():
 
     return parser
 
-
-def main():  # noqa: D103, PLR0912, PLR1260
+# pylint: disable-next=R0912
+def main() -> None:  # noqa: D103, PLR0912, PLR1260
     args = cmd_parser().parse_args(sys.argv[1:])
 
     if args.validator != "":
@@ -71,13 +71,14 @@ def main():  # noqa: D103, PLR0912, PLR1260
         validator = import_validator_from_file(args.validator_file)
 
     if args.command == 'message':
+        message: str = ""
         if args.message_file:
-            message: str = Path(args.message_text).read_text()
+            message = Path(args.message_text).read_text(encoding='utf-8')
         else:
-            message: str = args.message_text
+            message = args.message_text
         check: Result = validator.validate_message(*split_message(message))
         print(check)
-        if check.status == Status.Ok:
+        if check.status == Status.OK:
             sys.exit(0)
         else:
             sys.exit(1)

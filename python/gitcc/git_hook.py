@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Optional
 
 
 def install_message_git_hook(project_dir: Path, force: bool = False, validator: Optional[str] = None,
@@ -35,6 +36,7 @@ def remove_message_git_hook(project_dir: Path) -> None:
     project_dir.joinpath(".git/hooks/commit-msg").unlink(missing_ok=True)
 
 
+# pylint: disable-next=R6101
 GIT_HOOKS: dict[str, dict[str, Callable]] = {  # noqa: PLR6101, WPS407
     'install': {
         'message': install_message_git_hook,
@@ -45,6 +47,7 @@ GIT_HOOKS: dict[str, dict[str, Callable]] = {  # noqa: PLR6101, WPS407
 }
 
 
+# pylint: disable-next=R0913
 def cmd_git_hook(repo: Path, action: str, hooks: list[str], force: bool = False, validator: Optional[str] = None,
                  validator_file: Optional[Path] = None) -> int:
     """
