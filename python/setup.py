@@ -9,7 +9,7 @@ with Path('README.rst').open(mode='r', encoding='UTF-8') as reader:
 
 setup(
     name="gitcc",
-    version="2.0.1",
+    version="2.0.2",
     description="GIT Commit Check - check the commit for certain rules",
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/x-rst',
