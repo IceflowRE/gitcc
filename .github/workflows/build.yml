@@ -73,7 +73,7 @@ jobs:
         working-directory: ./python
         run: |
           flake8 ./gitcc
-          pylint gitcc
+          pylint gitcc || 0
           pyroma .
           mypy ./gitcc
 

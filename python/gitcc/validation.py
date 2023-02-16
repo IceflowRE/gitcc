@@ -23,15 +23,15 @@ class SimpleTag(CommitValidator):
         if self.rx_category.fullmatch(match.group(1)) is None:
             return Result(
                 Status.Failure,
-                "Invalid category tag. It should be either a single '*' or completely lowercase " +
-                "letters or numbers, at least 2 characters long, other allowed characters are: '|', '-' and spaces.",
+                "Invalid category tag. It should be either a single '*' or completely lowercase "
+                + "letters or numbers, at least 2 characters long, other allowed characters are: '|', '-' and spaces.",
             )
 
         if self.rx_description.fullmatch(match.group(2)) is None:
             return Result(
                 Status.Failure,
-                "Invalid description. It should start with an uppercase letter or number, " +
-                "should be not to short and should not end with a punctuation."
+                "Invalid description. It should start with an uppercase letter or number, "
+                + "should be not to short and should not end with a punctuation."
             )
         return Result(Status.Ok)
 
