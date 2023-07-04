@@ -13,7 +13,7 @@ var Status;
     Status["Failure"] = "Failure";
     Status["Warning"] = "Warning";
     Status["Ok"] = "Correct";
-})(Status = exports.Status || (exports.Status = {}));
+})(Status || (exports.Status = Status = {}));
 class Result {
     constructor(status, message = '', commit = undefined) {
         this.status = Status.Failure;
