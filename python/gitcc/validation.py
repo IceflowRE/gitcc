@@ -61,5 +61,8 @@ class Regex(CommitValidator):
         if self.description_pattern is not None:
             match = self.description_pattern.fullmatch(description)
             if match is None:
-                return Result(Status.FAILURE, f"Description does not match the pattern '{self.description_pattern.pattern}'")
+                return Result(
+                    Status.FAILURE,
+                    f"Description does not match the pattern '{self.description_pattern.pattern}'"
+                )
         return Result(Status.OK)

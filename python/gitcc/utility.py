@@ -4,6 +4,7 @@ from typing import cast
 
 from git import Repo
 from git.objects import Commit
+
 from gitcc.commit_validator import CommitValidator, Result, Status
 
 
@@ -13,7 +14,7 @@ def import_validator_from_file(validator_file: Path) -> CommitValidator:
     """
     scope: dict = {}
     # pylint: disable-next=W0122
-    exec(compile(validator_file.read_text(), '<string>', 'exec'), scope)
+    exec(compile(validator_file.read_text(), '<string>', 'exec'), scope)  # noqa: S102
     return scope['Validator']()
 
 

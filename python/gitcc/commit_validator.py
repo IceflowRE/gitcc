@@ -29,11 +29,11 @@ class Result:
     def __str__(self) -> str:  # noqa: D105
         msg: str = self.status.value
         if self.commit is not None:
-            msg += f" | {self.commit.hexsha} - {str(self.commit.summary)}"
+            msg = f"{msg} | {self.commit.hexsha} - {str(self.commit.summary)}"
         if self.message != "":
             if self.commit is None:
-                msg += " |"
-            msg += f"\n        : {self.message}"
+                msg = f"{msg} |"
+            msg = f"{msg}\n        : {self.message}"
         return msg
 
 
