@@ -7,6 +7,9 @@ import * as gh_utils from './gh-utils'
 
 async function run(): Promise<void> {
     try {
+        core.debug(JSON.stringify(github.context))
+        core.info(JSON.stringify(github.context))
+        
         const validator_file: string = core.getInput('validator_file')
         const validator_name: string = core.getInput('validator')
         const options: string[] = core.getMultilineInput('options')
