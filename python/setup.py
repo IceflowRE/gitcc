@@ -9,7 +9,7 @@ with Path('README.rst').open(mode='r', encoding='UTF-8') as reader:
 
 setup(
     name="gitcc",
-    version="2.0.5",
+    version="2.0.6",
     description="GIT Commit Check - check the commit for certain rules",
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/x-rst',
@@ -30,7 +30,7 @@ setup(
     packages=find_packages(include=['gitcc', 'gitcc.*']),
     python_requires='>=3.9',
     install_requires=[
-        "GitPython==3.1.37",
+        "GitPython==3.1.41",
     ],
     extras_require={
         'dev': [
