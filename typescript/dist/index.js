@@ -15,9 +15,9 @@ var Status;
     Status["Ok"] = "Correct";
 })(Status || (exports.Status = Status = {}));
 class Result {
-    constructor(status, message = '', commit = undefined) {
+    constructor(status, message = "", commit = undefined) {
         this.status = Status.Failure;
-        this.message = '';
+        this.message = "";
         this.commit = undefined;
         this.status = status;
         this.message = message;
@@ -41,9 +41,9 @@ class Result {
         if (this.commit !== undefined) {
             msg += ` | ${this.commit.hexsha} - ${this.commit.summary()}`;
         }
-        if (this.message !== '') {
+        if (this.message !== "") {
             if (this.commit === undefined) {
-                msg += ' |';
+                msg += " |";
             }
             msg += `\n        : ${this.message}`;
         }
@@ -56,9 +56,9 @@ class CommitValidator {
         this.options = options;
     }
     static split_message(message) {
-        const res = message.split('\n', 1);
+        const res = message.split("\n", 1);
         if (res.length === 1) {
-            return [res[0], ''];
+            return [res[0], ""];
         }
         return [res[0], res[1]];
     }
@@ -73,7 +73,7 @@ class CommitValidator {
         return check;
     }
     validate_message(_summary, _description) {
-        return new Result(Status.Ok, '');
+        return new Result(Status.Ok, "");
     }
 }
 exports.CommitValidator = CommitValidator;
@@ -93,9 +93,9 @@ class User {
         this.email = undefined;
         this.name = undefined;
         this.username = undefined;
-        this.email = data['email'];
-        this.name = data['name'];
-        this.username = data['username'];
+        this.email = data["email"];
+        this.name = data["name"];
+        this.username = data["username"];
     }
 }
 exports.User = User;
@@ -108,22 +108,22 @@ class Commit {
         this.hexsha = undefined;
         this.timestamp = undefined;
         this.message = undefined;
-        this.author = new User(commit['author']);
-        this.committer = new User(commit['committer']);
-        this.distinct = (_a = commit['distinct']) !== null && _a !== void 0 ? _a : false;
-        this.hexsha = (_b = commit['id']) !== null && _b !== void 0 ? _b : sha;
-        const timestamp_raw = (_c = commit['timestamp']) !== null && _c !== void 0 ? _c : timestamp;
+        this.author = new User(commit["author"]);
+        this.committer = new User(commit["committer"]);
+        this.distinct = (_a = commit["distinct"]) !== null && _a !== void 0 ? _a : false;
+        this.hexsha = (_b = commit["id"]) !== null && _b !== void 0 ? _b : sha;
+        const timestamp_raw = (_c = commit["timestamp"]) !== null && _c !== void 0 ? _c : timestamp;
         if (timestamp_raw !== undefined) {
             this.timestamp = new Date(timestamp_raw);
         }
-        this.message = commit['message'];
+        this.message = commit["message"];
     }
     // return empty string if message is undefined
     summary() {
         if (this.message === undefined) {
-            return '';
+            return "";
         }
-        return this.message.split('\n', 1)[0];
+        return this.message.split("\n", 1)[0];
     }
 }
 exports.Commit = Commit;
@@ -188,7 +188,7 @@ function download_validator_file(validator_file, octokit) {
             path: validator_file,
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
-            ref: github.context.sha,
+            ref: github.context.sha
         });
         if (response.status !== 200) {
             core.error(JSON.stringify(response.data));
@@ -203,7 +203,7 @@ function download_validator_file(validator_file, octokit) {
             core.setFailed(`download of '${response.url}' failed`);
             return ["", ""];
         }
-        const buffer = Buffer.from(response.data.content, 'base64').toString('utf-8');
+        const buffer = Buffer.from(response.data.content, "base64").toString("utf-8");
         const output_path = (0, url_1.pathToFileURL)((0, path_1.resolve)("./validator.mjs"));
         fs_1.default.writeFileSync(output_path, buffer);
         return [response.data.html_url || "", output_path.toString()];
@@ -213,10 +213,10 @@ exports.download_validator_file = download_validator_file;
 function get_commit_creation(octokit) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const response = yield octokit.request('GET /repos/{owner}/{repo}/git/commits/{commit_sha}', {
+        const response = yield octokit.request("GET /repos/{owner}/{repo}/git/commits/{commit_sha}", {
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
-            commit_sha: (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.base.sha,
+            commit_sha: (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.base.sha
         });
         if (response.status !== 200) {
             core.error(JSON.stringify(response.data));
@@ -234,16 +234,16 @@ function get_commits(octokit) {
     return __awaiter(this, void 0, void 0, function* () {
         const commits = [];
         switch (github.context.eventName) {
-            case 'pull_request': {
+            case "pull_request": {
                 const pages = Math.floor(((_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.commits) / 100) + 1;
                 for (let page = 1; page <= pages; page++) {
-                    const response = yield octokit.request('GET /repos/{owner}/{repo}/commits', {
+                    const response = yield octokit.request("GET /repos/{owner}/{repo}/commits", {
                         owner: (_b = github.context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.head.repo.owner.login,
                         repo: (_c = github.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.head.repo.name,
                         sha: (_d = github.context.payload.pull_request) === null || _d === void 0 ? void 0 : _d.head.ref,
                         since: yield get_commit_creation(octokit),
                         per_page: 100,
-                        page,
+                        page
                     });
                     if (response.status !== 200) {
                         core.error(JSON.stringify(response.data));
@@ -259,16 +259,16 @@ function get_commits(octokit) {
                 }
                 break;
             }
-            case 'push':
+            case "push":
             default: {
-                if ('commits' in github.context.payload && github.context.payload['commits'].length > 0) {
-                    for (const commit of github.context.payload['commits']) {
+                if ("commits" in github.context.payload && github.context.payload["commits"].length > 0) {
+                    for (const commit of github.context.payload["commits"]) {
                         commits.push(new commit_1.Commit(commit));
                     }
                     // on tags or if commits was empty
                 }
-                else if ('head_commit' in github.context.payload) {
-                    commits.push(new commit_1.Commit(github.context.payload['head_commit']));
+                else if ("head_commit" in github.context.payload) {
+                    commits.push(new commit_1.Commit(github.context.payload["head_commit"]));
                 }
             }
         }
@@ -349,18 +349,18 @@ const gh_utils = __importStar(__nccwpck_require__(8642));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const validator_file = core.getInput('validator_file');
-            const validator_name = core.getInput('validator');
-            const options = core.getMultilineInput('options');
-            const access_token = core.getInput('access_token');
+            const validator_file = core.getInput("validator_file");
+            const validator_name = core.getInput("validator");
+            const options = core.getMultilineInput("options");
+            const access_token = core.getInput("access_token");
             // just to be sure
             core.setSecret(access_token);
             core.debug(JSON.stringify(github.context));
-            if (validator_file !== '' && validator_name !== '') {
+            if (validator_file !== "" && validator_name !== "") {
                 core.setFailed("Please provide only 'validator' or 'validator_file'!");
                 return;
             }
-            if (validator_file === '' && validator_name === '') {
+            if (validator_file === "" && validator_name === "") {
                 core.setFailed("Please provide either 'validator' or 'validator_file'!");
                 return;
             }
@@ -442,17 +442,17 @@ const validation = __importStar(__nccwpck_require__(581));
 function get_shipped_validator_cls(validator) {
     return __awaiter(this, void 0, void 0, function* () {
         switch (validator.toLowerCase()) {
-            case 'simpletag':
+            case "simpletag":
                 return validation.SimpleTag;
-            case 'regex':
+            case "regex":
                 return validation.RegEx;
             default:
-                throw Error('Invalid validator name!');
+                throw Error("Invalid validator name!");
         }
     });
 }
 exports.get_shipped_validator_cls = get_shipped_validator_cls;
-const _importDynamic = new Function('modulePath', 'return import(modulePath)');
+const _importDynamic = new Function("modulePath", "return import(modulePath)");
 function import_validator_cls(validator_file) {
     return __awaiter(this, void 0, void 0, function* () {
         const validation_mod = yield _importDynamic(validator_file);
@@ -489,23 +489,23 @@ class SimpleTag extends commit_validator_1.CommitValidator {
     validate_message(summary, _description) {
         const match = SimpleTag.rx_parser.exec(summary);
         if (match === null) {
-            return new commit_validator_1.Result(commit_validator_1.Status.Failure, 'Summary has invalid format. It should be \'[<tag>] <Good Description>\'');
+            return new commit_validator_1.Result(commit_validator_1.Status.Failure, "Summary has invalid format. It should be '[<tag>] <Good Description>'");
         }
         if (!SimpleTag.rx_category.test(match[1])) {
             return new commit_validator_1.Result(commit_validator_1.Status.Failure, "Invalid category tag. It should be either a single '*' or completely lowercase " +
                 "letters or numbers, at least 2 characters long, other allowed characters are: '|', '-' and spaces.");
         }
         if (!SimpleTag.rx_description.test(match[2])) {
-            return new commit_validator_1.Result(commit_validator_1.Status.Failure, 'Invalid description. It should start with an uppercase letter or number, ' +
-                'should be not to short and should not end with a punctuation.');
+            return new commit_validator_1.Result(commit_validator_1.Status.Failure, "Invalid description. It should start with an uppercase letter or number, " +
+                "should be not to short and should not end with a punctuation.");
         }
         return new commit_validator_1.Result(commit_validator_1.Status.Ok);
     }
 }
 exports.SimpleTag = SimpleTag;
-SimpleTag.rx_parser = new RegExp('^\\[(.*)] (.*)$');
-SimpleTag.rx_category = new RegExp('^\\*|(?:[a-z0-9]{2,}[ |-]?)+$');
-SimpleTag.rx_description = new RegExp('^[A-Z0-9]\\S*(?:\\s\\S*)+[^.!?,\\s]$');
+SimpleTag.rx_parser = new RegExp("^\\[(.*)] (.*)$");
+SimpleTag.rx_category = new RegExp("^\\*|(?:[a-z0-9]{2,}[ |-]?)+$");
+SimpleTag.rx_description = new RegExp("^[A-Z0-9]\\S*(?:\\s\\S*)+[^.!?,\\s]$");
 class RegEx extends commit_validator_1.CommitValidator {
     constructor(options) {
         super(options);
