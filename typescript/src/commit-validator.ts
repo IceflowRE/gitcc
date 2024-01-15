@@ -1,17 +1,17 @@
-import {Commit} from './commit'
+import {Commit} from "./commit"
 
 export enum Status {
-    Failure = 'Failure',
-    Warning = 'Warning',
-    Ok = 'Correct'
+    Failure = "Failure",
+    Warning = "Warning",
+    Ok = "Correct"
 }
 
 export class Result {
     status: Status = Status.Failure
-    message = ''
+    message = ""
     commit: Commit | undefined = undefined
 
-    constructor(status: Status, message = '', commit: Commit | undefined = undefined) {
+    constructor(status: Status, message = "", commit: Commit | undefined = undefined) {
         this.status = status
         this.message = message
         this.commit = commit
@@ -35,9 +35,9 @@ export class Result {
         if (this.commit !== undefined) {
             msg += ` | ${this.commit.hexsha} - ${this.commit.summary()}`
         }
-        if (this.message !== '') {
+        if (this.message !== "") {
             if (this.commit === undefined) {
-                msg += ' |'
+                msg += " |"
             }
             msg += `\n        : ${this.message}`
         }
@@ -52,9 +52,9 @@ export class CommitValidator {
     }
 
     static split_message(message: string): [string, string] {
-        const res: string[] = message.split('\n', 1)
+        const res: string[] = message.split("\n", 1)
         if (res.length === 1) {
-            return [res[0], '']
+            return [res[0], ""]
         }
         return [res[0], res[1]]
     }
@@ -71,6 +71,6 @@ export class CommitValidator {
     }
 
     validate_message(_summary: string, _description: string): Result {
-        return new Result(Status.Ok, '')
+        return new Result(Status.Ok, "")
     }
 }

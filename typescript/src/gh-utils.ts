@@ -1,21 +1,24 @@
 // GitHub support utility.
 
 import {resolve} from "path"
-import {GitHub} from "@actions/github/lib/utils";
-import * as github from "@actions/github";
-import * as core from "@actions/core";
-import fs from "fs";
-import {Commit} from "./commit";
-import {Result, Status} from "./commit-validator";
-import {pathToFileURL} from "url";
+import {GitHub} from "@actions/github/lib/utils"
+import * as github from "@actions/github"
+import * as core from "@actions/core"
+import fs from "fs"
+import {Commit} from "./commit"
+import {Result, Status} from "./commit-validator"
+import {pathToFileURL} from "url"
 
 // return html url to validator file and local filepath to downloaded file
-export async function download_validator_file(validator_file: string, octokit: InstanceType<typeof GitHub>): Promise<[string, string]> {
+export async function download_validator_file(
+    validator_file: string,
+    octokit: InstanceType<typeof GitHub>
+): Promise<[string, string]> {
     const response = await octokit.rest.repos.getContent({
         path: validator_file,
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
-        ref: github.context.sha,
+        ref: github.context.sha
     })
     if (response.status !== 200) {
         core.error(JSON.stringify(response.data))
@@ -30,17 +33,17 @@ export async function download_validator_file(validator_file: string, octokit: I
         core.setFailed(`download of '${response.url}' failed`)
         return ["", ""]
     }
-    const buffer = Buffer.from(response.data.content, 'base64').toString('utf-8')
+    const buffer = Buffer.from(response.data.content, "base64").toString("utf-8")
     const output_path = pathToFileURL(resolve("./validator.mjs"))
     fs.writeFileSync(output_path, buffer)
     return [response.data.html_url || "", output_path.toString()]
 }
 
 export async function get_commit_creation(octokit: InstanceType<typeof GitHub>): Promise<string> {
-    const response = await octokit.request('GET /repos/{owner}/{repo}/git/commits/{commit_sha}', {
+    const response = await octokit.request("GET /repos/{owner}/{repo}/git/commits/{commit_sha}", {
         owner: github.context.repo.owner,
         repo: github.context.repo.repo,
-        commit_sha: github.context.payload.pull_request?.base.sha,
+        commit_sha: github.context.payload.pull_request?.base.sha
     })
     if (response.status !== 200) {
         core.error(JSON.stringify(response.data))
@@ -55,16 +58,16 @@ export async function get_commit_creation(octokit: InstanceType<typeof GitHub>):
 export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise<Commit[]> {
     const commits: Commit[] = []
     switch (github.context.eventName) {
-        case 'pull_request': {
+        case "pull_request": {
             const pages = Math.floor(github.context.payload.pull_request?.commits / 100) + 1
             for (let page = 1; page <= pages; page++) {
-                const response = await octokit.request('GET /repos/{owner}/{repo}/commits', {
+                const response = await octokit.request("GET /repos/{owner}/{repo}/commits", {
                     owner: github.context.payload.pull_request?.head.repo.owner.login,
                     repo: github.context.payload.pull_request?.head.repo.name,
                     sha: github.context.payload.pull_request?.head.ref,
                     since: await get_commit_creation(octokit),
                     per_page: 100,
-                    page,
+                    page
                 })
                 if (response.status !== 200) {
                     core.error(JSON.stringify(response.data))
@@ -80,15 +83,15 @@ export async function get_commits(octokit: InstanceType<typeof GitHub>): Promise
             }
             break
         }
-        case 'push':
+        case "push":
         default: {
-            if ('commits' in github.context.payload && github.context.payload['commits'].length > 0) {
-                for (const commit of github.context.payload['commits']) {
+            if ("commits" in github.context.payload && github.context.payload["commits"].length > 0) {
+                for (const commit of github.context.payload["commits"]) {
                     commits.push(new Commit(commit))
                 }
                 // on tags or if commits was empty
-            } else if ('head_commit' in github.context.payload) {
-                commits.push(new Commit(github.context.payload['head_commit']))
+            } else if ("head_commit" in github.context.payload) {
+                commits.push(new Commit(github.context.payload["head_commit"]))
             }
         }
     }

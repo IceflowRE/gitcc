@@ -1,25 +1,25 @@
-import * as core from '@actions/core'
-import * as github from '@actions/github'
-import {CommitValidator, Result} from './commit-validator'
+import * as core from "@actions/core"
+import * as github from "@actions/github"
+import {CommitValidator, Result} from "./commit-validator"
 import {GitHub} from "@actions/github/lib/utils"
-import * as utils from './utils'
-import * as gh_utils from './gh-utils'
+import * as utils from "./utils"
+import * as gh_utils from "./gh-utils"
 
 async function run(): Promise<void> {
     try {
-        const validator_file: string = core.getInput('validator_file')
-        const validator_name: string = core.getInput('validator')
-        const options: string[] = core.getMultilineInput('options')
-        const access_token: string = core.getInput('access_token')
+        const validator_file: string = core.getInput("validator_file")
+        const validator_name: string = core.getInput("validator")
+        const options: string[] = core.getMultilineInput("options")
+        const access_token: string = core.getInput("access_token")
         // just to be sure
         core.setSecret(access_token)
         core.debug(JSON.stringify(github.context))
 
-        if (validator_file !== '' && validator_name !== '') {
+        if (validator_file !== "" && validator_name !== "") {
             core.setFailed("Please provide only 'validator' or 'validator_file'!")
             return
         }
-        if (validator_file === '' && validator_name === '') {
+        if (validator_file === "" && validator_name === "") {
             core.setFailed("Please provide either 'validator' or 'validator_file'!")
             return
         }
