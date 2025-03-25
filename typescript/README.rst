@@ -103,8 +103,8 @@ Reference
 
 - `Commit <./src/commit.ts#L14>`__
 - `CommitValidator <./src/commit-validator.ts#L48>`__
-- `Result <./src/commmit-validator.ts#L9>`__
-- `Status <./src/commmit-validator.ts#L3>`__
+- `Result <./src/commit-validator.ts#L9>`__
+- `Status <./src/commit-validator.ts#L3>`__
 
 Credits
 =======
