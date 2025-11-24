@@ -59,7 +59,7 @@ export default defineConfig([
                 allowExpressions: true,
             }],
 
-            "@stylistic/func-call-spacing": ["error", "never"],
+            "@stylistic/function-call-spacing": ["error", "never"],
             semi: "off",
             "@stylistic/semi": ["error", "never"],
             "@stylistic/type-annotation-spacing": "error",
