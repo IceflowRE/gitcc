@@ -19,5 +19,5 @@ inputs:
     required: false
     description: 'each line is passed as an entry of a list to the validator'
 runs:
-  using: 'node16'
+  using: 'node24'
   main: 'typescript/dist/index.js'
