@@ -30,6 +30,14 @@ Credits
     - `Iceflower S <https://github.com/IceflowRE>`__
         - iceflower@gmx.de
 
+Changelog
+=========
+
+2.1.0
+-----
+
+- Running on Node 24 in GitHub Actions.
+
 License
 =======
 
