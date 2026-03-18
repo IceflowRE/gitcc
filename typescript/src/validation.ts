@@ -1,4 +1,4 @@
-import {CommitValidator, Result, Status} from "./commit-validator"
+import {CommitValidator, Result, Status} from "./commit-validator.js"
 
 export class SimpleTag extends CommitValidator {
     private static readonly rx_parser: RegExp = new RegExp("^\\[(.*)] (.*)$")

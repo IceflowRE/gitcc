@@ -1,4 +1,4 @@
-import {Commit} from "./commit"
+import {Commit} from "./commit.js"
 
 export enum Status {
     Failure = "Failure",

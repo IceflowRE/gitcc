@@ -1,9 +1,9 @@
 import * as core from "@actions/core"
 import * as github from "@actions/github"
-import {CommitValidator, Result} from "./commit-validator"
 import {GitHub} from "@actions/github/lib/utils"
-import * as utils from "./utils"
-import * as gh_utils from "./gh-utils"
+import {CommitValidator, Result} from "./commit-validator.js"
+import * as gh_utils from "./gh-utils.js"
+import * as utils from "./utils.js"
 
 async function run(): Promise<void> {
     try {

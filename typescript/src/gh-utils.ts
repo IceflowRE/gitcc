@@ -1,13 +1,13 @@
 // GitHub support utility.
 
-import {resolve} from "path"
-import {GitHub} from "@actions/github/lib/utils"
-import * as github from "@actions/github"
 import * as core from "@actions/core"
+import * as github from "@actions/github"
+import {GitHub} from "@actions/github/lib/utils"
 import fs from "fs"
-import {Commit} from "./commit"
-import {Result, Status} from "./commit-validator"
+import {resolve} from "path"
 import {pathToFileURL} from "url"
+import {Result, Status} from "./commit-validator.js"
+import {Commit} from "./commit.js"
 
 // return html url to validator file and local filepath to downloaded file
 export async function download_validator_file(

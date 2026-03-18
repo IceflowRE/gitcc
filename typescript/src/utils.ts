@@ -1,6 +1,6 @@
-import {Commit} from "./commit"
-import {CommitValidator, Result, Status} from "./commit-validator"
-import * as validation from "./validation"
+import {CommitValidator, Result, Status} from "./commit-validator.js"
+import {Commit} from "./commit.js"
+import * as validation from "./validation.js"
 
 export async function get_shipped_validator_cls(validator: string): Promise<typeof CommitValidator> {
     switch (validator.toLowerCase()) {
