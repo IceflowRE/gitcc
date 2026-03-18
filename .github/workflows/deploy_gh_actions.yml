@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           path: ${{ env.main_git_path }}
       - name: Checkout gh-actions
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           ref: 'gh-actions'
           path: ${{ env.gh_actions_git_path }}

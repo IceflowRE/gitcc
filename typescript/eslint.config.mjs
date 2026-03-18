@@ -49,9 +49,9 @@ export default [
                     allowDefaultProject: [
                         "__fixtures__/*.ts",
                         "__tests__/*.ts",
+                        "example/simpleTag.mjs",
                         "eslint.config.mjs",
-                        "jest.config.js",
-                        "rollup.config.ts"
+                        "jest.config.js"
                     ]
                 },
                 tsconfigRootDir: import.meta.dirname
@@ -76,6 +76,14 @@ export default [
             "no-console": "off",
             "no-shadow": "off",
             "no-unused-vars": "off",
+            "@typescript-eslint/no-unused-vars": [
+                "warn",
+                {
+                    argsIgnorePattern: "^_",
+                    varsIgnorePattern: "^_",
+                    caughtErrorsIgnorePattern: "^_"
+                }
+            ],
             "prettier/prettier": "error"
         }
     }
