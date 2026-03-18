@@ -2,6 +2,7 @@
 Used in GitHub Actions to validate commits.
  */
 
+// eslint-disable-line no-unused-vars
 let Commit
 let CommitValidator
 let Result
