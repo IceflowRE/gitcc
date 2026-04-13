@@ -7,6 +7,8 @@ GitCC
 
 ----
 
+**DEPRECATION NOTICE:** The python version is on sunset will be removed in the future. If there is still interest in a standalone version open an issue.
+
 GitCC checks commits for certain rules. For example commit messages.
 
 
