@@ -1,20 +1,16 @@
-********************
-GitCC GitHub Actions
-********************
+# GitCC GitHub Action
 
-|maintained| |programming language| |license|
+![maintained](https://img.shields.io/badge/maintained-yes-brightgreen.svg)
+![Programming Language](https://img.shields.io/badge/language-Typescript-orange.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/IceflowRE/gitcc/blob/main/LICENSE.md)
 
-----
+[![GitHub Marketplace](https://img.shields.io/badge/GitHub_Marketplace-grey.svg?logo=github-actions)](https://github.com/marketplace/actions/git-commit-check)
 
 GitCC checks commit messages for certain rules.
 
-----
+## Usage
 
-Usage
-=====
-
-.. code-block:: yml
-
+```yaml
     - uses: IceflowRE/gitcc@v2
       with:
         # GitHub private access token default: {{ $github.token }}.
@@ -25,56 +21,52 @@ Usage
         validator: ''
         # Each line is passed as an entry of a list to the validator.
         options: ''
+```
 
-Shipped validators
-------------------
+## Shipped validators
 
-SimpleTag
-    Format: ``[<tag>] <Good Description>`` (e.g. ``[ci] Fix testing suite installation``)
-RegEx
-    Pass two lines to parameter ``options``, first line is a regex for summary, second line is description.
-    Using ``>any<`` means it accepts anything.
+### SimpleTag
 
-    .. code-block:: yml
+Format: `[<tag>] <Good Description>` (e.g. `[ci] Fix testing suite installation`)
 
+### RegEx
+
+Pass two lines to parameter `options`, first line is a regex for summary, second line is description.
+Using `>any<` means it accepts anything.
+
+```yaml
         - uses: IceflowRE/gitcc@v2
           with:
             validator: 'RegEx'
             options: |
               >any<
               >any<
+```
 
+## Custom validators
 
-Custom validators
------------------
+Create somewhere in your repository a file (e.g. `validator.mjs`) and use the path in `validator_file`.
 
-Create somewhere in your repository a file (e.g. ``validator.mjs``) and use the path in ``validator_file``.
+Your validator will inherit from [CommitValidator](https://www.google.com/search?q=./src/commit-validator.ts%23L48). Only implement the function you need, so it won't override the default behavior.
 
-Your validator will inherit from `CommitValidator <./src/commit-validator.ts#L48>`__. Only implement the function you need, so it wont override the default behavior.
+You have to always return a [Result](https://www.google.com/search?q=./src/commmit-validator.ts%23L48). Only `Status.Failure` will result into an CI error.
 
-You have to always return a `Result <./src/commmit-validator.ts#L48>`__. Only ``Status.Failure`` will result into an CI error.
+[CommitValidator](https://www.google.com/search?q=./src/commit-validator.ts%23L48) provides the following constructor/functions:
 
-`CommitValidator <./src/commit-validator.ts#L48>`__ provides the following constructor/functions.
-
-- ``constructor(options: string[])``
+* **`constructor(options: string[])`**
     Options passed to GitHub workflow.
-
-- ``split_message(message: string): [string, string]``
+* **`split_message(message: string): [string, string]`**
     Will split the message into summary and description.
-
-- ``validate(commit: Commit): Result``
-    Will call ``validate_message`` by default.
-
-- ``validate_message(summary: string, description: string): Result``
+* **`validate(commit: Commit): Result`**
+    Will call `validate_message` by default.
+* **`validate_message(summary: string, description: string): Result`**
     For simple use cases when only the summary and description text has to be checked.
 
-Look here for the `Reference`_ and an basic example `here <./example/simpleTag.mjs>`__.
+Look here for the [Reference](https://www.google.com/search?q=%23reference) and a basic example [here](https://www.google.com/search?q=./example/simpleTag.mjs).
 
-Template
-********
+### Template
 
-.. code-block:: javascript
-
+```javascript
     /*
     Used in GitHub Actions for validate commits.
      */
@@ -97,24 +89,22 @@ Template
             // PLACE YOUR CODE HERE
         }
     }
+```
 
-Reference
----------
+## Reference
 
-- `Commit <./src/commit.ts#L14>`__
-- `CommitValidator <./src/commit-validator.ts#L48>`__
-- `Result <./src/commit-validator.ts#L9>`__
-- `Status <./src/commit-validator.ts#L3>`__
+* [Commit](https://www.google.com/search?q=./src/commit.ts%23L14)
+* [CommitValidator](https://www.google.com/search?q=./src/commit-validator.ts%23L48)
+* [Result](https://www.google.com/search?q=./src/commit-validator.ts%23L9)
+* [Status](https://www.google.com/search?q=./src/commit-validator.ts%23L3)
 
-Credits
-=======
+## Changelog
 
-- Developer
-    - `Iceflower S <https://github.com/IceflowRE>`__
-        - iceflower@gmx.de
+### 2.1.0
 
-License
-=======
+* Running on Node 24 in GitHub Actions.
+
+## License
 
 Copyright 2021-present Iceflower S (iceflower@gmx.de)
 
@@ -123,12 +113,3 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-.. Badges.
-
-.. |maintained| image:: https://img.shields.io/badge/maintained-yes-brightgreen.svg
-
-.. |programming language| image:: https://img.shields.io/badge/language-Typescript-orange.svg
-
-.. |license| image:: https://img.shields.io/badge/License-MIT-blue.svg
-   :target: https://github.com/IceflowRE/gitcc/blob/main/LICENSE.rst
