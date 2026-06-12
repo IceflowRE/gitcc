@@ -1,8 +1,9 @@
+import { registerHooks } from 'node:module';
+import * as fs from 'fs';
+import fs__default, { promises, existsSync, readFileSync } from 'fs';
 import * as os from 'os';
 import os__default, { EOL } from 'os';
 import 'crypto';
-import * as fs from 'fs';
-import fs__default, { promises, existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import http from 'http';
 import https from 'https';
@@ -33,6 +34,41 @@ import require$$5$3 from 'string_decoder';
 import 'child_process';
 import 'timers';
 import { pathToFileURL } from 'url';
+
+/*
+ * @fileoverview Injects global helpers into the user custom script.
+ */
+const gitccJs = fs__default.readFileSync(new URL("./gitcc.js", import.meta.url), "utf-8");
+registerHooks({
+    resolve(specifier, context, nextResolve) {
+        if (specifier === "gitcc") {
+            return { shortCircuit: true, url: "gitcc:virtual" };
+        }
+        return nextResolve(specifier, context);
+    },
+    load(url, context, nextLoad) {
+        if (url === "gitcc:virtual") {
+            return {
+                shortCircuit: true,
+                format: "module",
+                source: gitccJs
+            };
+        }
+        return nextLoad(url, context);
+    }
+});
+const dynamicImport = new Function("path", "return import(path)");
+async function importValidator(validatorFile, options) {
+    const mod = await dynamicImport(validatorFile);
+    if (typeof mod.createValidator !== "function") {
+        throw new Error("Validator file must export a 'createValidator(options)' function");
+    }
+    const validator = mod.createValidator(options);
+    if (typeof validator?.validate !== "function") {
+        throw new Error("createValidator must return an object with a 'validate(commit)' function");
+    }
+    return validator;
+}
 
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -3567,9 +3603,9 @@ var hasRequiredConstants$3;
 function requireConstants$3 () {
 	if (hasRequiredConstants$3) return constants$3;
 	hasRequiredConstants$3 = 1;
-	(function (exports$1) {
-		Object.defineProperty(exports$1, "__esModule", { value: true });
-		exports$1.SPECIAL_HEADERS = exports$1.HEADER_STATE = exports$1.MINOR = exports$1.MAJOR = exports$1.CONNECTION_TOKEN_CHARS = exports$1.HEADER_CHARS = exports$1.TOKEN = exports$1.STRICT_TOKEN = exports$1.HEX = exports$1.URL_CHAR = exports$1.STRICT_URL_CHAR = exports$1.USERINFO_CHARS = exports$1.MARK = exports$1.ALPHANUM = exports$1.NUM = exports$1.HEX_MAP = exports$1.NUM_MAP = exports$1.ALPHA = exports$1.FINISH = exports$1.H_METHOD_MAP = exports$1.METHOD_MAP = exports$1.METHODS_RTSP = exports$1.METHODS_ICE = exports$1.METHODS_HTTP = exports$1.METHODS = exports$1.LENIENT_FLAGS = exports$1.FLAGS = exports$1.TYPE = exports$1.ERROR = void 0;
+	(function (exports) {
+		Object.defineProperty(exports, "__esModule", { value: true });
+		exports.SPECIAL_HEADERS = exports.HEADER_STATE = exports.MINOR = exports.MAJOR = exports.CONNECTION_TOKEN_CHARS = exports.HEADER_CHARS = exports.TOKEN = exports.STRICT_TOKEN = exports.HEX = exports.URL_CHAR = exports.STRICT_URL_CHAR = exports.USERINFO_CHARS = exports.MARK = exports.ALPHANUM = exports.NUM = exports.HEX_MAP = exports.NUM_MAP = exports.ALPHA = exports.FINISH = exports.H_METHOD_MAP = exports.METHOD_MAP = exports.METHODS_RTSP = exports.METHODS_ICE = exports.METHODS_HTTP = exports.METHODS = exports.LENIENT_FLAGS = exports.FLAGS = exports.TYPE = exports.ERROR = void 0;
 		const utils_1 = requireUtils();
 		(function (ERROR) {
 		    ERROR[ERROR["OK"] = 0] = "OK";
@@ -3597,12 +3633,12 @@ function requireConstants$3 () {
 		    ERROR[ERROR["PAUSED_UPGRADE"] = 22] = "PAUSED_UPGRADE";
 		    ERROR[ERROR["PAUSED_H2_UPGRADE"] = 23] = "PAUSED_H2_UPGRADE";
 		    ERROR[ERROR["USER"] = 24] = "USER";
-		})(exports$1.ERROR || (exports$1.ERROR = {}));
+		})(exports.ERROR || (exports.ERROR = {}));
 		(function (TYPE) {
 		    TYPE[TYPE["BOTH"] = 0] = "BOTH";
 		    TYPE[TYPE["REQUEST"] = 1] = "REQUEST";
 		    TYPE[TYPE["RESPONSE"] = 2] = "RESPONSE";
-		})(exports$1.TYPE || (exports$1.TYPE = {}));
+		})(exports.TYPE || (exports.TYPE = {}));
 		(function (FLAGS) {
 		    FLAGS[FLAGS["CONNECTION_KEEP_ALIVE"] = 1] = "CONNECTION_KEEP_ALIVE";
 		    FLAGS[FLAGS["CONNECTION_CLOSE"] = 2] = "CONNECTION_CLOSE";
@@ -3614,12 +3650,12 @@ function requireConstants$3 () {
 		    FLAGS[FLAGS["TRAILING"] = 128] = "TRAILING";
 		    // 1 << 8 is unused
 		    FLAGS[FLAGS["TRANSFER_ENCODING"] = 512] = "TRANSFER_ENCODING";
-		})(exports$1.FLAGS || (exports$1.FLAGS = {}));
+		})(exports.FLAGS || (exports.FLAGS = {}));
 		(function (LENIENT_FLAGS) {
 		    LENIENT_FLAGS[LENIENT_FLAGS["HEADERS"] = 1] = "HEADERS";
 		    LENIENT_FLAGS[LENIENT_FLAGS["CHUNKED_LENGTH"] = 2] = "CHUNKED_LENGTH";
 		    LENIENT_FLAGS[LENIENT_FLAGS["KEEP_ALIVE"] = 4] = "KEEP_ALIVE";
-		})(exports$1.LENIENT_FLAGS || (exports$1.LENIENT_FLAGS = {}));
+		})(exports.LENIENT_FLAGS || (exports.LENIENT_FLAGS = {}));
 		var METHODS;
 		(function (METHODS) {
 		    METHODS[METHODS["DELETE"] = 0] = "DELETE";
@@ -3679,8 +3715,8 @@ function requireConstants$3 () {
 		    METHODS[METHODS["RECORD"] = 44] = "RECORD";
 		    /* RAOP */
 		    METHODS[METHODS["FLUSH"] = 45] = "FLUSH";
-		})(METHODS = exports$1.METHODS || (exports$1.METHODS = {}));
-		exports$1.METHODS_HTTP = [
+		})(METHODS = exports.METHODS || (exports.METHODS = {}));
+		exports.METHODS_HTTP = [
 		    METHODS.DELETE,
 		    METHODS.GET,
 		    METHODS.HEAD,
@@ -3718,10 +3754,10 @@ function requireConstants$3 () {
 		    // TODO(indutny): should we allow it with HTTP?
 		    METHODS.SOURCE,
 		];
-		exports$1.METHODS_ICE = [
+		exports.METHODS_ICE = [
 		    METHODS.SOURCE,
 		];
-		exports$1.METHODS_RTSP = [
+		exports.METHODS_RTSP = [
 		    METHODS.OPTIONS,
 		    METHODS.DESCRIBE,
 		    METHODS.ANNOUNCE,
@@ -3738,59 +3774,59 @@ function requireConstants$3 () {
 		    METHODS.GET,
 		    METHODS.POST,
 		];
-		exports$1.METHOD_MAP = utils_1.enumToMap(METHODS);
-		exports$1.H_METHOD_MAP = {};
-		Object.keys(exports$1.METHOD_MAP).forEach((key) => {
+		exports.METHOD_MAP = utils_1.enumToMap(METHODS);
+		exports.H_METHOD_MAP = {};
+		Object.keys(exports.METHOD_MAP).forEach((key) => {
 		    if (/^H/.test(key)) {
-		        exports$1.H_METHOD_MAP[key] = exports$1.METHOD_MAP[key];
+		        exports.H_METHOD_MAP[key] = exports.METHOD_MAP[key];
 		    }
 		});
 		(function (FINISH) {
 		    FINISH[FINISH["SAFE"] = 0] = "SAFE";
 		    FINISH[FINISH["SAFE_WITH_CB"] = 1] = "SAFE_WITH_CB";
 		    FINISH[FINISH["UNSAFE"] = 2] = "UNSAFE";
-		})(exports$1.FINISH || (exports$1.FINISH = {}));
-		exports$1.ALPHA = [];
+		})(exports.FINISH || (exports.FINISH = {}));
+		exports.ALPHA = [];
 		for (let i = 'A'.charCodeAt(0); i <= 'Z'.charCodeAt(0); i++) {
 		    // Upper case
-		    exports$1.ALPHA.push(String.fromCharCode(i));
+		    exports.ALPHA.push(String.fromCharCode(i));
 		    // Lower case
-		    exports$1.ALPHA.push(String.fromCharCode(i + 0x20));
+		    exports.ALPHA.push(String.fromCharCode(i + 0x20));
 		}
-		exports$1.NUM_MAP = {
+		exports.NUM_MAP = {
 		    0: 0, 1: 1, 2: 2, 3: 3, 4: 4,
 		    5: 5, 6: 6, 7: 7, 8: 8, 9: 9,
 		};
-		exports$1.HEX_MAP = {
+		exports.HEX_MAP = {
 		    0: 0, 1: 1, 2: 2, 3: 3, 4: 4,
 		    5: 5, 6: 6, 7: 7, 8: 8, 9: 9,
 		    A: 0XA, B: 0XB, C: 0XC, D: 0XD, E: 0XE, F: 0XF,
 		    a: 0xa, b: 0xb, c: 0xc, d: 0xd, e: 0xe, f: 0xf,
 		};
-		exports$1.NUM = [
+		exports.NUM = [
 		    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 		];
-		exports$1.ALPHANUM = exports$1.ALPHA.concat(exports$1.NUM);
-		exports$1.MARK = ['-', '_', '.', '!', '~', '*', '\'', '(', ')'];
-		exports$1.USERINFO_CHARS = exports$1.ALPHANUM
-		    .concat(exports$1.MARK)
+		exports.ALPHANUM = exports.ALPHA.concat(exports.NUM);
+		exports.MARK = ['-', '_', '.', '!', '~', '*', '\'', '(', ')'];
+		exports.USERINFO_CHARS = exports.ALPHANUM
+		    .concat(exports.MARK)
 		    .concat(['%', ';', ':', '&', '=', '+', '$', ',']);
 		// TODO(indutny): use RFC
-		exports$1.STRICT_URL_CHAR = [
+		exports.STRICT_URL_CHAR = [
 		    '!', '"', '$', '%', '&', '\'',
 		    '(', ')', '*', '+', ',', '-', '.', '/',
 		    ':', ';', '<', '=', '>',
 		    '@', '[', '\\', ']', '^', '_',
 		    '`',
 		    '{', '|', '}', '~',
-		].concat(exports$1.ALPHANUM);
-		exports$1.URL_CHAR = exports$1.STRICT_URL_CHAR
+		].concat(exports.ALPHANUM);
+		exports.URL_CHAR = exports.STRICT_URL_CHAR
 		    .concat(['\t', '\f']);
 		// All characters with 0x80 bit set to 1
 		for (let i = 0x80; i <= 0xff; i++) {
-		    exports$1.URL_CHAR.push(i);
+		    exports.URL_CHAR.push(i);
 		}
-		exports$1.HEX = exports$1.NUM.concat(['a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F']);
+		exports.HEX = exports.NUM.concat(['a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F']);
 		/* Tokens as defined by rfc 2616. Also lowercases them.
 		 *        token       = 1*<any CHAR except CTLs or separators>
 		 *     separators     = "(" | ")" | "<" | ">" | "@"
@@ -3798,27 +3834,27 @@ function requireConstants$3 () {
 		 *                    | "/" | "[" | "]" | "?" | "="
 		 *                    | "{" | "}" | SP | HT
 		 */
-		exports$1.STRICT_TOKEN = [
+		exports.STRICT_TOKEN = [
 		    '!', '#', '$', '%', '&', '\'',
 		    '*', '+', '-', '.',
 		    '^', '_', '`',
 		    '|', '~',
-		].concat(exports$1.ALPHANUM);
-		exports$1.TOKEN = exports$1.STRICT_TOKEN.concat([' ']);
+		].concat(exports.ALPHANUM);
+		exports.TOKEN = exports.STRICT_TOKEN.concat([' ']);
 		/*
 		 * Verify that a char is a valid visible (printable) US-ASCII
 		 * character or %x80-FF
 		 */
-		exports$1.HEADER_CHARS = ['\t'];
+		exports.HEADER_CHARS = ['\t'];
 		for (let i = 32; i <= 255; i++) {
 		    if (i !== 127) {
-		        exports$1.HEADER_CHARS.push(i);
+		        exports.HEADER_CHARS.push(i);
 		    }
 		}
 		// ',' = \x44
-		exports$1.CONNECTION_TOKEN_CHARS = exports$1.HEADER_CHARS.filter((c) => c !== 44);
-		exports$1.MAJOR = exports$1.NUM_MAP;
-		exports$1.MINOR = exports$1.MAJOR;
+		exports.CONNECTION_TOKEN_CHARS = exports.HEADER_CHARS.filter((c) => c !== 44);
+		exports.MAJOR = exports.NUM_MAP;
+		exports.MINOR = exports.MAJOR;
 		var HEADER_STATE;
 		(function (HEADER_STATE) {
 		    HEADER_STATE[HEADER_STATE["GENERAL"] = 0] = "GENERAL";
@@ -3830,8 +3866,8 @@ function requireConstants$3 () {
 		    HEADER_STATE[HEADER_STATE["CONNECTION_CLOSE"] = 6] = "CONNECTION_CLOSE";
 		    HEADER_STATE[HEADER_STATE["CONNECTION_UPGRADE"] = 7] = "CONNECTION_UPGRADE";
 		    HEADER_STATE[HEADER_STATE["TRANSFER_ENCODING_CHUNKED"] = 8] = "TRANSFER_ENCODING_CHUNKED";
-		})(HEADER_STATE = exports$1.HEADER_STATE || (exports$1.HEADER_STATE = {}));
-		exports$1.SPECIAL_HEADERS = {
+		})(HEADER_STATE = exports.HEADER_STATE || (exports.HEADER_STATE = {}));
+		exports.SPECIAL_HEADERS = {
 		    'connection': HEADER_STATE.CONNECTION,
 		    'content-length': HEADER_STATE.CONTENT_LENGTH,
 		    'proxy-connection': HEADER_STATE.CONNECTION,
@@ -8722,10 +8758,10 @@ function requireClientH1 () {
 	const TIMEOUT_KEEP_ALIVE = 8 | USE_NATIVE_TIMER;
 
 	class Parser {
-	  constructor (client, socket, { exports: exports$1 }) {
+	  constructor (client, socket, { exports }) {
 	    assert(Number.isFinite(client[kMaxHeadersSize]) && client[kMaxHeadersSize] > 0);
 
-	    this.llhttp = exports$1;
+	    this.llhttp = exports;
 	    this.ptr = this.llhttp.llhttp_alloc(constants.TYPE.RESPONSE);
 	    this.client = client;
 	    this.socket = socket;
@@ -28011,38 +28047,6 @@ var ExitCode;
     ExitCode[ExitCode["Failure"] = 1] = "Failure";
 })(ExitCode || (ExitCode = {}));
 /**
- * Registers a secret which will get masked from logs
- *
- * @param secret - Value of the secret to be masked
- * @remarks
- * This function instructs the Actions runner to mask the specified value in any
- * logs produced during the workflow run. Once registered, the secret value will
- * be replaced with asterisks (***) whenever it appears in console output, logs,
- * or error messages.
- *
- * This is useful for protecting sensitive information such as:
- * - API keys
- * - Access tokens
- * - Authentication credentials
- * - URL parameters containing signatures (SAS tokens)
- *
- * Note that masking only affects future logs; any previous appearances of the
- * secret in logs before calling this function will remain unmasked.
- *
- * @example
- * ```typescript
- * // Register an API token as a secret
- * const apiToken = "abc123xyz456";
- * setSecret(apiToken);
- *
- * // Now any logs containing this value will show *** instead
- * console.log(`Using token: ${apiToken}`); // Outputs: "Using token: ***"
- * ```
- */
-function setSecret(secret) {
-    issueCommand('add-mask', {}, secret);
-}
-/**
  * Gets the value of an input.
  * Unless trimWhitespace is set to false in InputOptions, the value is also trimmed.
  * Returns an empty string if the value is not defined.
@@ -28082,13 +28086,6 @@ function setFailed(message) {
     error(message);
 }
 /**
- * Writes debug message to user log
- * @param message debug message
- */
-function debug(message) {
-    issueCommand('debug', {}, message);
-}
-/**
  * Adds an error issue
  * @param message error issue message. Errors will be converted to string via toString()
  * @param properties optional properties to add to the annotation.
@@ -28110,6 +28107,110 @@ function warning(message, properties = {}) {
  */
 function info(message) {
     process.stdout.write(message + os.EOL);
+}
+
+let Client$1 = class Client {
+    owner;
+    repo;
+    sha;
+    eventName;
+    serverUrl;
+    token;
+    payload;
+    constructor() {
+        const repository = process.env.GITHUB_REPOSITORY;
+        const [owner, repo] = repository.split("/", 2);
+        this.owner = owner;
+        this.repo = repo;
+        this.sha = process.env.GITHUB_SHA;
+        this.eventName = process.env.GITHUB_EVENT_NAME;
+        this.serverUrl = process.env.GITHUB_SERVER_URL;
+        this.token = process.env.GITHUB_TOKEN;
+        this.payload = JSON.parse(fs__default.readFileSync(process.env.GITHUB_EVENT_PATH, "utf-8"));
+    }
+    async get(path) {
+        const res = await fetch(`${this.serverUrl}/api/v1${path}`, {
+            headers: { Authorization: `Bearer ${this.token}`, Accept: "application/json" }
+        });
+        if (!res.ok) {
+            throw new Error(`Forgejo API error: ${res.status} ${res.statusText} — ${path}`);
+        }
+        return res.json();
+    }
+    async downloadValidatorFile(validatorFile) {
+        const data = (await this.get(`/repos/${this.owner}/${this.repo}/contents/${validatorFile}?ref=${this.sha}`));
+        if (!("content" in data)) {
+            throw new Error(`'${validatorFile}' is not a file or has no content`);
+        }
+        const content = Buffer.from(data.content, "base64").toString("utf-8");
+        const outputPath = pathToFileURL(resolve("./validator.mjs"));
+        fs__default.writeFileSync(outputPath, content);
+        return [data.html_url ?? "", outputPath.toString()];
+    }
+    async getCommits() {
+        switch (this.eventName) {
+            case "pull_request": {
+                if (!this.payload.pull_request) {
+                    throw new Error("pull_request event has no PR in payload");
+                }
+                return this.getPullRequestCommits(this.payload.pull_request);
+            }
+            case "push":
+            default: {
+                const commits = this.payload.commits;
+                if (commits?.length > 0) {
+                    return commits.map((c) => parseCommit$1(c));
+                }
+                else if (this.payload.head_commit) {
+                    return [parseCommit$1(this.payload.head_commit)];
+                }
+                else {
+                    const data = (await this.get(`/repos/${this.owner}/${this.repo}/git/commits/${this.sha}`));
+                    const committer = data.committer;
+                    return [parseCommit$1(data, this.sha, committer.date)];
+                }
+            }
+        }
+    }
+    async getCommitCreation(sha) {
+        const data = (await this.get(`/repos/${this.owner}/${this.repo}/git/commits/${sha}`));
+        const committer = data.committer;
+        return committer.date;
+    }
+    async getPullRequestCommits(pr) {
+        const base = pr.base;
+        const head = pr.head;
+        const headRepo = head.repo;
+        const headOwner = headRepo.owner;
+        const since = await this.getCommitCreation(base.sha);
+        const commits = [];
+        let page = 1;
+        while (true) {
+            const data = (await this.get(`/repos/${headOwner.login}/${headRepo.name}/commits?sha=${head.ref}&since=${since}&limit=50&page=${page}`));
+            for (const raw of data) {
+                if (raw.sha === base.sha)
+                    continue;
+                const inner = raw.commit;
+                const committer = inner.committer;
+                commits.push(parseCommit$1(inner, raw.sha, committer?.date ?? ""));
+            }
+            if (data.length < 50)
+                break;
+            page++;
+        }
+        return commits;
+    }
+};
+function parseCommit$1(commit, sha = "", timestamp = "") {
+    const timestampValue = commit.timestamp ?? timestamp;
+    return {
+        author: commit.author,
+        committer: commit.committer,
+        distinct: commit.distinct ?? false,
+        hexsha: commit.id ?? sha,
+        timestamp: timestampValue ? new Date(timestampValue) : undefined,
+        message: commit.message
+    };
 }
 
 class Context {
@@ -29048,6 +29149,19 @@ function getProxyFetch(destinationUrl) {
 }
 function getApiBaseUrl() {
     return process.env['GITHUB_API_URL'] || 'https://api.github.com';
+}
+function getUserAgentWithOrchestrationId(baseUserAgent) {
+    var _a;
+    const orchId = (_a = process.env['ACTIONS_ORCHESTRATION_ID']) === null || _a === void 0 ? void 0 : _a.trim();
+    if (orchId) {
+        const sanitizedId = orchId.replace(/[^a-z0-9_.-]/gi, '_');
+        const tag = `actions_orchestration_id/${sanitizedId}`;
+        if (baseUserAgent === null || baseUserAgent === void 0 ? void 0 : baseUserAgent.includes(tag))
+            return baseUserAgent;
+        const ua = baseUserAgent ? `${baseUserAgent} ` : '';
+        return `${ua}${tag}`;
+    }
+    return baseUserAgent;
 }
 
 function getUserAgent() {
@@ -32967,6 +33081,11 @@ function getOctokitOptions(token, options) {
     if (auth) {
         opts.auth = auth;
     }
+    // Orchestration ID
+    const userAgent = getUserAgentWithOrchestrationId(opts.userAgent);
+    if (userAgent) {
+        opts.userAgent = userAgent;
+    }
     return opts;
 }
 
@@ -32982,333 +33101,332 @@ function getOctokit(token, options, ...additionalPlugins) {
     return new GitHubWithPlugins(getOctokitOptions(token));
 }
 
+class Client {
+    octokit;
+    constructor() {
+        this.octokit = getOctokit(process.env.GITHUB_TOKEN ?? "");
+    }
+    async downloadValidatorFile(validatorFile) {
+        const { data } = await this.octokit.rest.repos.getContent({
+            path: validatorFile,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: context.sha
+        });
+        if (Array.isArray(data) || !("content" in data)) {
+            throw new Error(`'${validatorFile}' is not a file or has no content`);
+        }
+        const content = Buffer.from(data.content, "base64").toString("utf-8");
+        const outputPath = pathToFileURL(resolve("./validator.mjs"));
+        fs__default.writeFileSync(outputPath, content);
+        return [data.html_url ?? "", outputPath.toString()];
+    }
+    async getCommits() {
+        const commits = [];
+        switch (context.eventName) {
+            case "pull_request": {
+                if (!context.payload.pull_request) {
+                    throw new Error("pull_request event has no PR in payload");
+                }
+                commits.push(...(await this.getPullRequestCommits(context.payload.pull_request)));
+                break;
+            }
+            case "push":
+            default: {
+                const payload = context.payload;
+                if (payload.commits?.length > 0) {
+                    for (const commit of payload.commits) {
+                        commits.push(parseCommit(commit));
+                    }
+                }
+                else if (payload.head_commit) {
+                    commits.push(parseCommit(payload.head_commit));
+                }
+                else {
+                    const { data } = await this.octokit.rest.git.getCommit({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        commit_sha: context.sha
+                    });
+                    commits.push(parseCommit(data, context.sha, data.committer.date));
+                }
+                break;
+            }
+        }
+        return commits;
+    }
+    async getCommitCreation(sha) {
+        const { data } = await this.octokit.rest.git.getCommit({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            commit_sha: sha
+        });
+        return data.committer.date;
+    }
+    async getPullRequestCommits(pr) {
+        const commits = [];
+        const since = await this.getCommitCreation(pr.base.sha);
+        let page = 1;
+        while (true) {
+            const { data } = await this.octokit.rest.repos.listCommits({
+                owner: pr.head.repo.owner.login,
+                repo: pr.head.repo.name,
+                sha: pr.head.ref,
+                since,
+                per_page: 100,
+                page
+            });
+            for (const raw of data) {
+                if (raw.sha === pr.base.sha) {
+                    continue;
+                }
+                commits.push(parseCommit(raw.commit, raw.sha, raw.commit.committer?.date ?? ""));
+            }
+            if (data.length < 100) {
+                break;
+            }
+            page++;
+        }
+        return commits;
+    }
+}
+function parseCommit(commit, sha = "", timestamp = "") {
+    const timestampValue = commit.timestamp ?? timestamp;
+    return {
+        author: commit.author,
+        committer: commit.committer,
+        distinct: commit.distinct ?? false,
+        hexsha: commit.id ?? sha,
+        timestamp: timestampValue ? new Date(timestampValue) : undefined,
+        message: commit.message
+    };
+}
+
+function getClient() {
+    if (isForgejo()) {
+        return new Client$1();
+    }
+    return new Client();
+}
+function isForgejo() {
+    const platform = getInput("platform").toLowerCase();
+    if (platform === "forgejo") {
+        return true;
+    }
+    if (platform === "github") {
+        return false;
+    }
+    return process.env.FORGEJO_TOKEN !== undefined;
+}
+
+// returns summary and description of a commit message
+function splitCommitMessage(msg) {
+    if (msg === undefined) {
+        return ["", ""];
+    }
+    const idx = msg.indexOf("\n\n");
+    if (idx === -1) {
+        return [msg.replace(/\n$/, ""), ""];
+    }
+    const summary = msg.slice(0, idx);
+    const description = msg.slice(idx + 2).replace(/\n$/, "");
+    return [summary, description];
+}
+
+function greenText(text) {
+    return `\u001b[0;32m${text}\u001b[0m`;
+}
+function redText(text) {
+    return `\u001b[0;31m${text}\u001b[0m`;
+}
+function yellowText(text) {
+    return `\u001b[0;33m${text}\u001b[0m`;
+}
+
 var Status;
 (function (Status) {
-    Status["Failure"] = "Failure";
+    Status["Invalid"] = "Invalid";
+    Status["Valid"] = "OK";
     Status["Warning"] = "Warning";
-    Status["Ok"] = "Correct";
 })(Status || (Status = {}));
-class Result {
-    status = Status.Failure;
-    message = "";
-    commit = undefined;
-    constructor(status, message = "", commit = undefined) {
-        this.status = status;
-        this.message = message;
-        this.commit = commit;
-    }
-    toString(colored = false) {
-        let msg = this.status.toString();
-        if (colored) {
-            switch (this.status) {
-                case Status.Failure:
-                    msg = `\u001b[0;31m${msg}\u001b[0m`;
-                    break;
-                case Status.Warning:
-                    msg = `\u001b[0;33m${msg}\u001b[0m`;
-                    break;
-                case Status.Ok:
-                    msg = `\u001b[0;32m${msg}\u001b[0m`;
-                    break;
-            }
-        }
-        if (this.commit !== undefined) {
-            msg += ` | ${this.commit.hexsha} - ${this.commit.summary()}`;
-        }
-        if (this.message !== "") {
-            if (this.commit === undefined) {
-                msg += " |";
-            }
-            msg += `\n        : ${this.message}`;
-        }
-        return msg;
-    }
-}
-class CommitValidator {
-    options;
-    constructor(options) {
-        this.options = options;
-    }
-    static split_message(message) {
-        const res = message.split("\n", 1);
-        if (res.length === 1) {
-            return [res[0], ""];
-        }
-        return [res[0], res[1]];
-    }
-    validate(commit) {
-        if (commit.message === undefined) {
-            return new Result(Status.Failure, "commit message was empty.");
-        }
-        const check = this.validate_message(...CommitValidator.split_message(commit.message));
-        if (check.commit === undefined) {
-            check.commit = commit;
-        }
-        return check;
-    }
-    validate_message(_summary, _description) {
-        return new Result(Status.Ok, "");
-    }
-}
-
-class User {
-    email = undefined;
-    name = undefined;
-    username = undefined;
-    constructor(data) {
-        this.email = data["email"];
-        this.name = data["name"];
-        this.username = data["username"];
-    }
-}
-class Commit {
-    author = undefined;
-    committer = undefined;
-    distinct = undefined;
-    hexsha = undefined;
-    timestamp = undefined;
-    message = undefined;
-    constructor(commit, sha = "", timestamp = "") {
-        this.author = new User(commit["author"]);
-        this.committer = new User(commit["committer"]);
-        this.distinct = commit["distinct"] ?? false;
-        this.hexsha = commit["id"] ?? sha;
-        const timestamp_raw = commit["timestamp"] ?? timestamp;
-        if (timestamp_raw !== undefined) {
-            this.timestamp = new Date(timestamp_raw);
-        }
-        this.message = commit["message"];
-    }
-    // return empty string if message is undefined
-    summary() {
-        if (this.message === undefined) {
-            return "";
-        }
-        return this.message.split("\n", 1)[0];
-    }
-}
-
-// GitHub support utility.
-// return html url to validator file and local filepath to downloaded file
-async function download_validator_file(validator_file, octokit) {
-    const response = await octokit.rest.repos.getContent({
-        path: validator_file,
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        ref: context.sha
-    });
-    if (response.status !== 200) {
-        error(JSON.stringify(response.data));
-        setFailed(`failed to retrieve validator file '${response.url}'`);
-        return ["", ""];
-    }
-    if (Array.isArray(response.data)) {
-        setFailed(`given path '${response.url}' was a directory`);
-        return ["", ""];
-    }
-    if (!("content" in response.data)) {
-        setFailed(`download of '${response.url}' failed`);
-        return ["", ""];
-    }
-    const buffer = Buffer.from(response.data.content, "base64").toString("utf-8");
-    const output_path = pathToFileURL(resolve("./validator.mjs"));
-    fs__default.writeFileSync(output_path, buffer);
-    return [response.data.html_url || "", output_path.toString()];
-}
-async function get_commit_creation(octokit) {
-    const response = await octokit.request("GET /repos/{owner}/{repo}/git/commits/{commit_sha}", {
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        commit_sha: context.payload.pull_request?.base.sha
-    });
-    if (response.status !== 200) {
-        error(JSON.stringify(response.data));
-        throw Error("Did not found creation date!");
-    }
-    if (Array.isArray(response.data)) {
-        throw Error("Commit creation date contained an array!");
-    }
-    return response.data["committer"]["date"];
-}
-async function get_commits(octokit) {
-    const commits = [];
-    switch (context.eventName) {
-        case "pull_request": {
-            const pages = Math.floor(context.payload.pull_request?.commits / 100) + 1;
-            for (let page = 1; page <= pages; page++) {
-                const response = await octokit.request("GET /repos/{owner}/{repo}/commits", {
-                    owner: context.payload.pull_request?.head.repo.owner.login,
-                    repo: context.payload.pull_request?.head.repo.name,
-                    sha: context.payload.pull_request?.head.ref,
-                    since: await get_commit_creation(octokit),
-                    per_page: 100,
-                    page
-                });
-                if (response.status !== 200) {
-                    error(JSON.stringify(response.data));
-                    return [];
-                }
-                for (const raw_commit of response.data) {
-                    // skip base commit
-                    if (raw_commit.sha === context.payload.pull_request?.base.sha) {
-                        continue;
-                    }
-                    commits.push(new Commit(raw_commit.commit, raw_commit.sha, raw_commit.commit.committer?.date));
-                }
-            }
-            break;
-        }
-        case "push":
-        default: {
-            if ("commits" in context.payload && context.payload["commits"].length > 0) {
-                for (const commit of context.payload["commits"]) {
-                    commits.push(new Commit(commit));
-                }
-                // on tags or if commits was empty
-            }
-            else if ("head_commit" in context.payload) {
-                commits.push(new Commit(context.payload["head_commit"]));
-            }
-        }
-    }
-    return commits;
-}
-function print_results(checks) {
-    let all_ok = true;
-    for (const check of checks) {
-        switch (check.status) {
-            case Status.Ok:
-                info(check.toString(true));
+function formatResult(result, colored = false) {
+    let text = result.status.toString();
+    if (colored) {
+        switch (result.status) {
+            case Status.Invalid:
+                text = redText(text);
                 break;
             case Status.Warning:
-                warning(check.toString());
+                text = yellowText(text);
                 break;
-            case Status.Failure:
-                setFailed(check.toString());
+            case Status.Valid:
+                text = greenText(text);
                 break;
         }
-        all_ok = all_ok && check.status !== Status.Failure;
     }
-    if (all_ok) {
-        info("\u001b[0;32mAll commits have the correct format!");
+    if (result.commit) {
+        const [summary, _] = splitCommitMessage(result.commit?.message ?? "");
+        text += ` | ${result.commit.hexsha} | ${summary}`;
     }
-    else {
-        info("\u001b[0;31mNot all commits were correct!");
-    }
+    return text;
+}
+function valid(commit) {
+    return { status: Status.Valid, message: "", commit };
+}
+function invalid(message, commit) {
+    return { status: Status.Invalid, message, commit };
 }
 
-class SimpleTag extends CommitValidator {
-    static rx_parser = new RegExp("^\\[(.*)] (.*)$");
-    static rx_category = new RegExp("^\\*|(?:[a-z0-9]{2,}[ |-]?)+$");
-    static rx_description = new RegExp("^[A-Z0-9]\\S*(?:\\s\\S*)+[^.!?,\\s]$");
-    validate_message(summary, _description) {
-        const match = SimpleTag.rx_parser.exec(summary);
-        if (match === null) {
-            return new Result(Status.Failure, "Summary has invalid format. It should be '[<tag>] <Good Description>'");
-        }
-        if (!SimpleTag.rx_category.test(match[1])) {
-            return new Result(Status.Failure, "Invalid category tag. It should be either a single '*' or completely lowercase " +
-                "letters or numbers, at least 2 characters long, other allowed characters are: '|', '-' and spaces.");
-        }
-        if (!SimpleTag.rx_description.test(match[2])) {
-            return new Result(Status.Failure, "Invalid description. It should start with an uppercase letter or number, " +
-                "should be not to short and should not end with a punctuation.");
-        }
-        return new Result(Status.Ok);
-    }
-}
-class RegEx extends CommitValidator {
-    rx_summary = undefined;
-    rx_description = undefined;
-    constructor(options) {
-        super(options);
-        if (options.length < 2) {
-            throw Error("RegEx validator expects at least two arguments");
-        }
-        if (options[0] !== ">any<") {
-            this.rx_summary = new RegExp(options[0]);
-        }
-        if (options[1] !== ">any<") {
-            this.rx_description = new RegExp(options[1]);
-        }
-    }
-    validate_message(summary, description) {
-        if (this.rx_summary !== undefined && !this.rx_summary.test(summary)) {
-            return new Result(Status.Failure, `Invalid summary, does not match RegEx '${this.rx_summary.source}'`);
-        }
-        if (this.rx_description !== undefined && !this.rx_description.test(description)) {
-            return new Result(Status.Failure, `Invalid description, does not match RegEx '${this.rx_description.source}'`);
-        }
-        return new Result(Status.Ok);
-    }
-}
-
-async function get_shipped_validator_cls(validator) {
-    switch (validator.toLowerCase()) {
-        case "simpletag":
-            return SimpleTag;
-        case "regex":
-            return RegEx;
-        default:
-            throw Error("Invalid validator name!");
-    }
-}
-const _importDynamic = new Function("modulePath", "return import(modulePath)");
-async function import_validator_cls(validator_file) {
-    const validation_mod = await _importDynamic(validator_file);
-    validation_mod.import_types(CommitValidator, Commit, Result, Status);
-    return validation_mod.createValidator();
-}
-function check_commits(commits, validator) {
+function checkCommits(validator, commits) {
     const checks = [];
     for (const commit of commits) {
         const res = validator.validate(commit);
         if (res.commit === undefined) {
             res.commit = commit;
         }
-        checks.push(validator.validate(commit));
+        checks.push(res);
     }
     return checks;
 }
+function parseValidatorOptions(options) {
+    const result = {};
+    for (const option of options) {
+        const sepCount = option.search(/[=:]/);
+        if (sepCount === -1) {
+            throw new Error(`Invalid option format '${option}'. Expected 'key=value' or 'key: value'`);
+        }
+        const key = option.slice(0, sepCount).trim().replace(/^"|"$/g, "");
+        const value = option
+            .slice(sepCount + 1)
+            .trim()
+            .replace(/^"|"$/g, "");
+        if (!key) {
+            throw new Error(`Invalid option format '${option}'. Key cannot be empty`);
+        }
+        result[key] = value;
+    }
+    return result;
+}
+function printResults(checks) {
+    let all_ok = true;
+    for (const check of checks) {
+        switch (check.status) {
+            case Status.Valid:
+                info(formatResult(check, true));
+                break;
+            case Status.Warning:
+                warning(formatResult(check, true));
+                if (check.message) {
+                    warning(`    : ${check.message}`);
+                }
+                break;
+            case Status.Invalid:
+                error(formatResult(check, true));
+                if (check.message) {
+                    error(`    : ${check.message}`);
+                }
+                break;
+        }
+        all_ok = all_ok && check.status !== Status.Invalid;
+    }
+    if (all_ok) {
+        info(greenText("All commits are valid!"));
+    }
+    else {
+        setFailed(redText("Some commits are not valid!"));
+    }
+}
 
+function getValidatorByName(validator, options) {
+    switch (validator.toLowerCase()) {
+        case "simpletag":
+            return new SimpleTagValidator(options);
+        case "regex":
+            return new RegExValidator(options);
+        default:
+            throw Error("Invalid validator name!");
+    }
+}
+class SimpleTagValidator {
+    static rx_parser = /^\[(.+?)\] (.+)$/;
+    static rx_category = /^(?:\*)$|^(?:[a-z0-9]{2,}|[a-z0-9][ -][a-z0-9]+)(?:[ -][a-z0-9]+)*(?:\|(?:[a-z0-9]{2,}|[a-z0-9][ -][a-z0-9]+)(?:[ -][a-z0-9]+)*)*$/;
+    static rx_description = /^[A-Z0-9]\S*(?:\s\S*)+[^.!?,\s]$/;
+    constructor(_options) { }
+    validate(commit) {
+        if (!commit.message) {
+            return invalid("Commit message was undefined.");
+        }
+        const [summary, _] = splitCommitMessage(commit.message);
+        const match = SimpleTagValidator.rx_parser.exec(summary);
+        if (match === null) {
+            return invalid("Summary has invalid format. Expected: '[<tag>] <Description>'");
+        }
+        if (!SimpleTagValidator.rx_category.test(match[1])) {
+            return invalid("Category tag must be a single '*' or lowercase letters/numbers (at least 2 characters), optionally separated by '|', '-' or spaces.");
+        }
+        if (!SimpleTagValidator.rx_description.test(match[2])) {
+            return invalid("Description must start with an uppercase letter or number, be sufficiently long and not end with punctuation.");
+        }
+        return valid();
+    }
+}
+class RegExValidator {
+    rxSummary = new RegExp("");
+    rxDescription = new RegExp("");
+    constructor(options) {
+        this.rxSummary = new RegExp(options["summary"] ?? "");
+        this.rxDescription = new RegExp(options["description"] ?? "");
+    }
+    validate(commit) {
+        if (!commit.message) {
+            return invalid("Commit message was undefined.");
+        }
+        const [summary, description] = splitCommitMessage(commit.message);
+        if (!this.rxSummary.test(summary)) {
+            return invalid(`Summary does not match pattern '${this.rxSummary.source}'`);
+        }
+        if (description && !this.rxDescription.test(description)) {
+            return invalid(`Description does not match pattern '${this.rxDescription.source}'`);
+        }
+        return valid();
+    }
+}
+
+// loader must be the first import as it handles the module loading of custom validators
 async function run() {
     try {
-        const validator_file = getInput("validator_file");
-        const validator_name = getInput("validator");
-        const options = getMultilineInput("options");
-        const access_token = getInput("access_token");
-        // just to be sure
-        setSecret(access_token);
-        debug(JSON.stringify(context));
-        if (validator_file !== "" && validator_name !== "") {
+        const validatorFile = getInput("validator_file");
+        const validatorName = getInput("validator");
+        if (validatorFile !== "" && validatorName !== "") {
             setFailed("Please provide only 'validator' or 'validator_file'!");
             return;
         }
-        if (validator_file === "" && validator_name === "") {
+        if (validatorFile === "" && validatorName === "") {
             setFailed("Please provide either 'validator' or 'validator_file'!");
             return;
         }
-        const octokit = getOctokit(access_token);
+        const client = getClient();
+        const valOptions = parseValidatorOptions(getMultilineInput("options"));
         let validator;
-        if (validator_file !== "") {
-            const [validator_url, mjs_file] = await download_validator_file(validator_file, octokit);
-            if (mjs_file === "") {
+        if (validatorFile !== "") {
+            const [validatorUrl, mjsFile] = await client.downloadValidatorFile(validatorFile);
+            if (mjsFile === "") {
                 return;
             }
-            info(`Using validator from '${validator_url}'`);
-            validator = new (await import_validator_cls(mjs_file))(options);
+            info(`Using validator from '${validatorUrl}'`);
+            validator = await importValidator(mjsFile, valOptions);
         }
         else {
-            info(`Using shipped validator '${validator_name}'`);
-            validator = new (await get_shipped_validator_cls(validator_name))(options);
+            info(`Using builtin validator '${validatorName}'`);
+            validator = getValidatorByName(validatorName, valOptions);
         }
-        const commits = await get_commits(octokit);
+        const commits = await client.getCommits();
         if (commits.length === 0) {
             setFailed("No commits were found!");
             return;
         }
-        const checks = check_commits(commits, validator);
-        print_results(checks);
+        const checks = checkCommits(validator, commits);
+        printResults(checks);
     }
     catch (error) {
         if (error instanceof Error)
