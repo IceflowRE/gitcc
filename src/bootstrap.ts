@@ -40,4 +40,8 @@ export async function importValidator(validatorFile: string, options: Record<str
     return validator as Validator
 }
 
-await dynamicImport("./index.js")
+async function main() {
+    await dynamicImport("./index.js")
+}
+
+main()
