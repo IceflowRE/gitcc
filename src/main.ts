@@ -35,7 +35,7 @@ async function run(): Promise<void> {
             core.info(`Using validator from '${validatorUrl}'`)
             validator = await importValidator(mjsFile, valOptions)
         } else {
-            core.info(`Using shipped validator '${validatorName}'`)
+            core.info(`Using builtin validator '${validatorName}'`)
             validator = getValidatorByName(validatorName, valOptions)
         }
 

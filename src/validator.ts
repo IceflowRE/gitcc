@@ -48,9 +48,15 @@ export function printResults(checks: Result[]): void {
                 break
             case Status.Warning:
                 core.warning(formatResult(check, true))
+                if (check.message) {
+                    core.warning(`    : ${check.message}`)
+                }
                 break
             case Status.Invalid:
-                core.setFailed(formatResult(check, true))
+                core.error(formatResult(check, true))
+                if (check.message) {
+                    core.error(`    : ${check.message}`)
+                }
                 break
         }
         all_ok = all_ok && check.status !== Status.Invalid
@@ -58,6 +64,6 @@ export function printResults(checks: Result[]): void {
     if (all_ok) {
         core.info(greenText("All commits are valid!"))
     } else {
-        core.info(redText("Some commits are not valid!"))
+        core.setFailed(redText("Some commits are not valid!"))
     }
 }

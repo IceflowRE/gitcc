@@ -18,12 +18,12 @@ jobs:
         run: |
           npm run all
 
-      - name: Commit Check (shipped SimpleTag)
+      - name: Commit Check (builtin SimpleTag)
         uses: ./
         with:
           validator: "simpletag"
 
-      - name: Commit Check (shipped RegEx)
+      - name: Commit Check (builtin RegEx)
         if: success() || failure()
         uses: ./
         with:

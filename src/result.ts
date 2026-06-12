@@ -33,9 +33,6 @@ export function formatResult(result: Result, colored: boolean = false): string {
         const [summary, _]: [string, string] = splitCommitMessage(result.commit?.message ?? "")
         text += ` | ${result.commit.hexsha} | ${summary}`
     }
-    if (result.status !== Status.Valid && result.message) {
-        text += `\n    : ${result.message}`
-    }
     return text
 }
 

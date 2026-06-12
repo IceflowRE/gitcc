@@ -15,7 +15,7 @@ splitCommitMessage(message) => [summary, description]
 const _ = warning
 
 export function createValidator(_options) {
-    const rx_parser = /^[(.*)] (.*)$/
+    const rx_parser = /^\[(.+?)\] (.+)$/
     const rx_category =
         /^(?:\*|(?:[a-z0-9]{2,}|[a-z0-9][ -][a-z0-9]+)(?:[ -][a-z0-9]+)*(?:\|(?:[a-z0-9]{2,}|[a-z0-9][ -][a-z0-9]+)(?:[ -][a-z0-9]+)*)*)$/
     const rx_description = /^[A-Z0-9]\S*(?:\s\S*)+[^.!?,\s]$/
