@@ -93,7 +93,7 @@ export function createValidator(options) {
 
 A full example can be found [here](https://github.com/IceflowRE/gitcc/tree/main/example/simpletag.mjs).
 
-Global available functions to help:
+Helper functions are available in the `gitcc` module. Import with `import * as gitcc from "gitcc"`.
 
 - **`function invalid(message: string, commit?: Commit): Result`**  
   Helper function to create a Result with status `Status.Invalid`.

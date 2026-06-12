@@ -1,9 +1,9 @@
 /*
- * @fileoverview Enableds injecting global helpers into the user custom script and starts main application.
+ * @fileoverview Injects global helpers into the user custom script.
  */
 import { registerHooks } from "node:module"
 import fs from "fs"
-import type { Validator } from "@/validator"
+import { Validator } from "@/validator"
 
 const gitccJs = fs.readFileSync(new URL("./gitcc.js", import.meta.url), "utf-8")
 
@@ -39,9 +39,3 @@ export async function importValidator(validatorFile: string, options: Record<str
     }
     return validator as Validator
 }
-
-async function main() {
-    await dynamicImport("./index.js")
-}
-
-main()

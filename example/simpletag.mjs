@@ -1,7 +1,7 @@
 /*
 Used in GitHub Actions to validate commits.
 
-Available globals:
+Available in gitcc:
 
 valid(commit?) => Result
 invalid(message, commit?) => Result  
@@ -9,10 +9,7 @@ warning(message, commit?) => Result
 splitCommitMessage(message) => [summary, description]
 */
 
-/* global splitCommitMessage, invalid, valid, warning */
-
-// disable unused linting warning, remove in your code
-const _ = warning
+import * as gitcc from "gitcc"
 
 export function createValidator(_options) {
     const rx_parser = /^\[(.+?)\] (.+)$/
@@ -22,22 +19,22 @@ export function createValidator(_options) {
 
     return {
         validate(commit) {
-            const [summary, _description] = splitCommitMessage(commit.message)
+            const [summary, _description] = gitcc.splitCommitMessage(commit.message)
             const match = rx_parser.exec(summary)
             if (match === null) {
-                return invalid("Summary has invalid format. It should be '[<tag>] <Good Description>'")
+                return gitcc.invalid("Summary has invalid format. It should be '[<tag>] <Good Description>'")
             }
             if (!rx_category.test(match[1])) {
-                return invalid(
+                return gitcc.invalid(
                     "Invalid category tag. It should be either a single '*' or completely lowercase letters or numbers, at least 2 characters long, other allowed characters are: '|', '-' and spaces."
                 )
             }
             if (!rx_description.test(match[2])) {
-                return invalid(
+                return gitcc.invalid(
                     "Invalid description. It should start with an uppercase letter or number, should be not to short and should not end with a punctuation."
                 )
             }
-            return valid()
+            return gitcc.valid()
         }
     }
 }
