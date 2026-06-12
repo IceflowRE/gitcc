@@ -23,7 +23,7 @@ export class SimpleTagValidator implements Validator {
 
     validate(commit: Commit): Result {
         if (!commit.message) {
-            return invalid("Commit message was undefined.", commit)
+            return invalid("Commit message was undefined.")
         }
         const [summary, _]: [string, string] = splitCommitMessage(commit.message)
 
@@ -56,7 +56,7 @@ export class RegExValidator implements Validator {
 
     validate(commit: Commit): Result {
         if (!commit.message) {
-            return invalid("Commit message was undefined.", commit)
+            return invalid("Commit message was undefined.")
         }
         const [summary, description]: [string, string] = splitCommitMessage(commit.message)
 

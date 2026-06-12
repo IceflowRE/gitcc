@@ -25,21 +25,19 @@ export function createValidator(_options) {
             const [summary, _description] = splitCommitMessage(commit.message)
             const match = rx_parser.exec(summary)
             if (match === null) {
-                return invalid("Summary has invalid format. It should be '[<tag>] <Good Description>'", commit)
+                return invalid("Summary has invalid format. It should be '[<tag>] <Good Description>'")
             }
             if (!rx_category.test(match[1])) {
                 return invalid(
-                    "Invalid category tag. It should be either a single '*' or completely lowercase letters or numbers, at least 2 characters long, other allowed characters are: '|', '-' and spaces.",
-                    commit
+                    "Invalid category tag. It should be either a single '*' or completely lowercase letters or numbers, at least 2 characters long, other allowed characters are: '|', '-' and spaces."
                 )
             }
             if (!rx_description.test(match[2])) {
                 return invalid(
-                    "Invalid description. It should start with an uppercase letter or number, should be not to short and should not end with a punctuation.",
-                    commit
+                    "Invalid description. It should start with an uppercase letter or number, should be not to short and should not end with a punctuation."
                 )
             }
-            return valid(commit)
+            return valid()
         }
     }
 }

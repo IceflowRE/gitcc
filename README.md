@@ -85,7 +85,7 @@ The file has to export a function `createValidator` that returns an object with 
 export function createValidator(options) {
     return {
         validate(commit) {
-            return valid(commit)
+            return valid()
         }
     }
 }
@@ -95,13 +95,13 @@ A full example can be found [here](https://github.com/IceflowRE/gitcc/tree/main/
 
 Global available functions to help:
 
-- **`function invalid(message: string, commit?: Commit): Result`**
+- **`function invalid(message: string, commit?: Commit): Result`**  
   Helper function to create a Result with status `Status.Invalid`.
-- **`function valid(commit?: Commit): Result`**
+- **`function valid(commit?: Commit): Result`**  
   Helper function to create a Result with status `Status.Valid`.
-- **`function warning(message: string, commit?: Commit): Result`**
+- **`function warning(message: string, commit?: Commit): Result`**  
   Helper function to create a Result with status `Status.Warning`.
-- **`function splitCommitMessage(msg: string): [string, string]`**
+- **`function splitCommitMessage(msg: string): [string, string]`**  
   Helper function to split a commit message into summary and description.
 
 ### Reference

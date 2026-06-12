@@ -14,7 +14,7 @@ export function checkCommits(validator: Validator, commits: Commit[]): Result[] 
         if (res.commit === undefined) {
             res.commit = commit
         }
-        checks.push(validator.validate(commit))
+        checks.push(res)
     }
     return checks
 }
