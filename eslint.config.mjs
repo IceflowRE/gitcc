@@ -44,12 +44,7 @@ export default [
 
             parserOptions: {
                 projectService: {
-                    allowDefaultProject: [
-                        "__fixtures__/*.ts",
-                        "__tests__/*.ts",
-                        "example/simpletag.mjs",
-                        "eslint.config.mjs"
-                    ]
+                    allowDefaultProject: ["__fixtures__/*.ts", "__tests__/*.ts", "example/simpletag.mjs", "eslint.config.mjs"]
                 },
                 tsconfigRootDir: import.meta.dirname
             }

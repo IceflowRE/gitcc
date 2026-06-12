@@ -13,8 +13,7 @@ import * as gitcc from "gitcc"
 
 export function createValidator(_options) {
     const rx_parser = /^\[(.+?)\] (.+)$/
-    const rx_category =
-        /^(?:\*|(?:[a-z0-9]{2,}|[a-z0-9][ -][a-z0-9]+)(?:[ -][a-z0-9]+)*(?:\|(?:[a-z0-9]{2,}|[a-z0-9][ -][a-z0-9]+)(?:[ -][a-z0-9]+)*)*)$/
+    const rx_category = /^(?:\*|(?:[a-z0-9]{2,}|[a-z0-9][ -][a-z0-9]+)(?:[ -][a-z0-9]+)*(?:\|(?:[a-z0-9]{2,}|[a-z0-9][ -][a-z0-9]+)(?:[ -][a-z0-9]+)*)*)$/
     const rx_description = /^[A-Z0-9]\S*(?:\s\S*)+[^.!?,\s]$/
 
     return {
@@ -26,7 +25,8 @@ export function createValidator(_options) {
             }
             if (!rx_category.test(match[1])) {
                 return gitcc.invalid(
-                    "Invalid category tag. It should be either a single '*' or completely lowercase letters or numbers, at least 2 characters long, other allowed characters are: '|', '-' and spaces."
+                    "Invalid category tag. It should be either a single '*' or completely lowercase letters or numbers, " +
+                        "at least 2 characters long, other allowed characters are: '|', '-' and spaces."
                 )
             }
             if (!rx_description.test(match[2])) {
