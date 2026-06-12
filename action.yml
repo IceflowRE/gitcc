@@ -13,7 +13,7 @@ inputs:
         description: "Name of builtin validator: 'regex', 'simpletag'"
     options:
         required: false
-        description: "Each line is a seperate option passed to the validator (key: \"value\")."
+        description: 'Each line is a seperate option passed to the validator (key: "value").'
     platform:
         required: false
         description: "Platform to use: 'github' or 'forgejo'. If empty it will be automatically detected."
