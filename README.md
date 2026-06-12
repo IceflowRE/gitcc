@@ -134,6 +134,10 @@ export interface Commit {
 - Refactor codebase to be more maintainable and extensible.
 - Simplify custom scripts.
 
+#### Migration
+
+If you used custom validators, you have to read the [custom validator section](#custom-validators) and adapt your scripts. The scripts got simplified and migration should be straightforward with minimal changes.
+
 ### 2.1.0
 
 - Running on Node 24 in GitHub Actions.
