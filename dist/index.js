@@ -28172,21 +28172,13 @@ let Client$1 = class Client {
             }
         }
     }
-    async getCommitCreation(sha) {
-        const data = (await this.get(`/repos/${this.owner}/${this.repo}/git/commits/${sha}`));
-        const committer = data.committer;
-        return committer.date;
-    }
     async getPullRequestCommits(pr) {
         const base = pr.base;
-        const head = pr.head;
-        const headRepo = head.repo;
-        const headOwner = headRepo.owner;
-        const since = await this.getCommitCreation(base.sha);
+        const prNumber = pr.number;
         const commits = [];
         let page = 1;
         while (true) {
-            const data = (await this.get(`/repos/${headOwner.login}/${headRepo.name}/commits?sha=${head.ref}&since=${since}&limit=50&page=${page}`));
+            const data = (await this.get(`/repos/${this.owner}/${this.repo}/pulls/${prNumber}/commits?limit=50&page=${page}`));
             for (const raw of data) {
                 if (raw.sha === base.sha) {
                     continue;
