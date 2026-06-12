@@ -16,7 +16,7 @@ export function getValidatorByName(validator: string, options: Record<string, st
 export class SimpleTagValidator implements Validator {
     private static readonly rx_parser: RegExp = /^\[(.+?)\] (.+)$/
     private static readonly rx_category: RegExp =
-        /^(?:\*|(?:[a-z0-9]{2,}|[a-z0-9][ -][a-z0-9]+)(?:[ -][a-z0-9]+)*(?:\|(?:[a-z0-9]{2,}|[a-z0-9][ -][a-z0-9]+)(?:[ -][a-z0-9]+)*)*)$/
+        /^(?:\*)$|^(?:[a-z0-9]{2,}|[a-z0-9][ -][a-z0-9]+)(?:[ -][a-z0-9]+)*(?:\|(?:[a-z0-9]{2,}|[a-z0-9][ -][a-z0-9]+)(?:[ -][a-z0-9]+)*)*$/
     private static readonly rx_description: RegExp = /^[A-Z0-9]\S*(?:\s\S*)+[^.!?,\s]$/
 
     constructor(_options: Record<string, string>) {}
