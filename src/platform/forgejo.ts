@@ -1,6 +1,7 @@
 import fs from "fs"
 import { resolve } from "path"
 import { pathToFileURL } from "url"
+import * as core from "@actions/core"
 import { Commit, User } from "@/commit"
 import { Client as IClient } from "@/platform/common"
 
@@ -21,7 +22,7 @@ export class Client implements IClient {
         this.sha = process.env.GITHUB_SHA!
         this.eventName = process.env.GITHUB_EVENT_NAME!
         this.serverUrl = process.env.GITHUB_SERVER_URL!
-        this.token = process.env.FORGEJO_TOKEN!
+        this.token = core.getInput("token") || process.env.FORGEJO_TOKEN || ""
         this.payload = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH!, "utf-8"))
     }
 

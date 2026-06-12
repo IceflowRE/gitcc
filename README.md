@@ -56,6 +56,8 @@ All options:
       opt2: "val2"
     # Platform to use: 'github' or 'forgejo'. If empty it will be automatically detected.
     platform: ""
+    # GitHub / Forgejo token
+    token: ${{ github.token }}
 ```
 
 > [!warning]

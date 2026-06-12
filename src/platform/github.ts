@@ -1,6 +1,7 @@
 import fs from "fs"
 import { resolve } from "path"
 import { pathToFileURL } from "url"
+import * as core from "@actions/core"
 import * as github from "@actions/github"
 import { GitHub } from "@actions/github/lib/utils"
 import { Commit, User } from "@/commit"
@@ -65,7 +66,7 @@ export class Client implements IClient {
 
     private initOctokit(): void {
         if (!this.octokit) {
-            const token: string = process.env.GITHUB_TOKEN ?? ""
+            const token: string = core.getInput("token") || process.env.GITHUB_TOKEN || ""
             if (!token) {
                 throw new Error("GITHUB_TOKEN is not available. Add 'permissions: contents: read' to your workflow job.")
             }
