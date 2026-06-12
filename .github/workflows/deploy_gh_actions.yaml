@@ -41,7 +41,7 @@ jobs:
       - name: Copy new files
         run: |
           mkdir -p ${{ env.gh_actions_git_path }}/dist/
-          cp -f ${{ env.main_git_path }}/README.rst ${{ env.gh_actions_git_path }}
+          cp -f ${{ env.main_git_path }}/README.md ${{ env.gh_actions_git_path }}
           cp -rf ${{ env.main_git_path }}/dist* ${{ env.gh_actions_git_path }}/
           cp -f ${{ env.main_git_path }}/action.yml ${{ env.gh_actions_git_path }}
 
