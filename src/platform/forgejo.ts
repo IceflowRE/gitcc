@@ -71,26 +71,14 @@ export class Client implements IClient {
         }
     }
 
-    private async getCommitCreation(sha: string): Promise<string> {
-        const data = (await this.get(`/repos/${this.owner}/${this.repo}/git/commits/${sha}`)) as Record<string, unknown>
-        const committer = data.committer as Record<string, unknown>
-        return committer.date as string
-    }
-
     private async getPullRequestCommits(pr: Record<string, unknown>): Promise<Commit[]> {
         const base = pr.base as Record<string, unknown>
-        const head = pr.head as Record<string, unknown>
-        const headRepo = head.repo as Record<string, unknown>
-        const headOwner = headRepo.owner as Record<string, unknown>
-        const since = await this.getCommitCreation(base.sha as string)
+        const prNumber = pr.number as number
 
         const commits: Commit[] = []
         let page = 1
         while (true) {
-            const data = (await this.get(`/repos/${headOwner.login}/${headRepo.name}/commits?sha=${head.ref}&since=${since}&limit=50&page=${page}`)) as Record<
-                string,
-                unknown
-            >[]
+            const data = (await this.get(`/repos/${this.owner}/${this.repo}/pulls/${prNumber}/commits?limit=50&page=${page}`)) as Record<string, unknown>[]
             for (const raw of data) {
                 if (raw.sha === base.sha) {
                     continue
