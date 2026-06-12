@@ -18,27 +18,15 @@ On GitHub: `IceflowRE/gitcc@v3.0.0`
 > [!note]
 > Unmutable release are used. There is no rolling tag like `latest` or `v3` because of the security implications.
 
-Content reading permissions are required to read custom validator files from the repository and to get the commits of a pull request.
-
-```yaml
-permissions:
-  contents: read
-```
-
 Minimal example:
 
 ```yaml
-jobs:
-  build:
-    permissions:
-      contents: read
-    steps:
-      - uses: IceflowRE/gitcc@v3.0.0
-        with:
-          validator: "regex"
-          options: |
-            summary: ".*"
-            description: ".*"
+- uses: IceflowRE/gitcc@v3.0.0
+  with:
+    validator: "regex"
+    options: |
+      summary: ".*"
+      description: ".*"
 ```
 
 All options:
