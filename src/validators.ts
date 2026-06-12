@@ -37,9 +37,7 @@ export class SimpleTagValidator implements Validator {
             )
         }
         if (!SimpleTagValidator.rx_description.test(match[2])) {
-            return invalid(
-                "Description must start with an uppercase letter or number, be sufficiently long and not end with punctuation."
-            )
+            return invalid("Description must start with an uppercase letter or number, be sufficiently long and not end with punctuation.")
         }
         return valid()
     }

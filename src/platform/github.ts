@@ -9,14 +9,11 @@ import { Client as IClient } from "@/platform/common"
 type PullRequest = NonNullable<typeof github.context.payload.pull_request>
 
 export class Client implements IClient {
-    private octokit: InstanceType<typeof GitHub>
-
-    constructor() {
-        this.octokit = github.getOctokit(process.env.GITHUB_TOKEN ?? "")
-    }
+    private octokit: InstanceType<typeof GitHub> | undefined
 
     async downloadValidatorFile(validatorFile: string): Promise<[string, string]> {
-        const { data } = await this.octokit.rest.repos.getContent({
+        this.initOctokit()
+        const { data } = await this.octokit!.rest.repos.getContent({
             path: validatorFile,
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
@@ -52,7 +49,8 @@ export class Client implements IClient {
                 } else if (payload.head_commit) {
                     commits.push(parseCommit(payload.head_commit))
                 } else {
-                    const { data } = await this.octokit.rest.git.getCommit({
+                    this.initOctokit()
+                    const { data } = await this.octokit!.rest.git.getCommit({
                         owner: github.context.repo.owner,
                         repo: github.context.repo.repo,
                         commit_sha: github.context.sha
@@ -65,8 +63,19 @@ export class Client implements IClient {
         return commits
     }
 
+    private initOctokit(): void {
+        if (!this.octokit) {
+            const token: string = process.env.GITHUB_TOKEN ?? ""
+            if (!token) {
+                throw new Error("GITHUB_TOKEN is not available. Add 'permissions: contents: read' to your workflow job.")
+            }
+            this.octokit = github.getOctokit(token)
+        }
+    }
+
     private async getCommitCreation(sha: string): Promise<string> {
-        const { data } = await this.octokit.rest.git.getCommit({
+        this.initOctokit()
+        const { data } = await this.octokit!.rest.git.getCommit({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
             commit_sha: sha
@@ -75,12 +84,13 @@ export class Client implements IClient {
     }
 
     private async getPullRequestCommits(pr: PullRequest): Promise<Commit[]> {
+        this.initOctokit()
         const commits: Commit[] = []
         const since = await this.getCommitCreation(pr.base.sha)
 
         let page: number = 1
         while (true) {
-            const { data } = await this.octokit.rest.repos.listCommits({
+            const { data } = await this.octokit!.rest.repos.listCommits({
                 owner: pr.head.repo!.owner.login,
                 repo: pr.head.repo!.name,
                 sha: pr.head.ref,

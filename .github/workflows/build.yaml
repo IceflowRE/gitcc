@@ -6,6 +6,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout main
         uses: actions/checkout@v6
@@ -22,8 +24,6 @@ jobs:
         uses: ./
         with:
           validator: "simpletag"
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Commit Check (builtin RegEx)
         if: success() || failure()
@@ -33,13 +33,9 @@ jobs:
           options: |
             summary: ".*"
             description: ".*"
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Commit Check (custom validator)
         if: success() || failure()
         uses: ./
         with:
           validator_file: "example/simpletag.mjs"
-        env:
-          GITHUB_TOKEN: ${{ github.token }}

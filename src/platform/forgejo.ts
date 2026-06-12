@@ -21,7 +21,7 @@ export class Client implements IClient {
         this.sha = process.env.GITHUB_SHA!
         this.eventName = process.env.GITHUB_EVENT_NAME!
         this.serverUrl = process.env.GITHUB_SERVER_URL!
-        this.token = process.env.GITHUB_TOKEN!
+        this.token = process.env.FORGEJO_TOKEN!
         this.payload = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH!, "utf-8"))
     }
 
@@ -36,9 +36,7 @@ export class Client implements IClient {
     }
 
     async downloadValidatorFile(validatorFile: string): Promise<[string, string]> {
-        const data = (await this.get(
-            `/repos/${this.owner}/${this.repo}/contents/${validatorFile}?ref=${this.sha}`
-        )) as Record<string, unknown>
+        const data = (await this.get(`/repos/${this.owner}/${this.repo}/contents/${validatorFile}?ref=${this.sha}`)) as Record<string, unknown>
         if (!("content" in data)) {
             throw new Error(`'${validatorFile}' is not a file or has no content`)
         }
@@ -64,9 +62,7 @@ export class Client implements IClient {
                 } else if (this.payload.head_commit) {
                     return [parseCommit(this.payload.head_commit as Record<string, unknown>)]
                 } else {
-                    const data = (await this.get(
-                        `/repos/${this.owner}/${this.repo}/git/commits/${this.sha}`
-                    )) as Record<string, unknown>
+                    const data = (await this.get(`/repos/${this.owner}/${this.repo}/git/commits/${this.sha}`)) as Record<string, unknown>
                     const committer = data.committer as Record<string, unknown>
                     return [parseCommit(data, this.sha, committer.date as string)]
                 }
@@ -90,16 +86,21 @@ export class Client implements IClient {
         const commits: Commit[] = []
         let page = 1
         while (true) {
-            const data = (await this.get(
-                `/repos/${headOwner.login}/${headRepo.name}/commits?sha=${head.ref}&since=${since}&limit=50&page=${page}`
-            )) as Record<string, unknown>[]
+            const data = (await this.get(`/repos/${headOwner.login}/${headRepo.name}/commits?sha=${head.ref}&since=${since}&limit=50&page=${page}`)) as Record<
+                string,
+                unknown
+            >[]
             for (const raw of data) {
-                if (raw.sha === base.sha) continue
+                if (raw.sha === base.sha) {
+                    continue
+                }
                 const inner = raw.commit as Record<string, unknown>
                 const committer = inner.committer as Record<string, unknown>
                 commits.push(parseCommit(inner, raw.sha as string, (committer?.date as string) ?? ""))
             }
-            if (data.length < 50) break
+            if (data.length < 50) {
+                break
+            }
             page++
         }
         return commits

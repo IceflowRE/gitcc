@@ -70,6 +70,7 @@ export default [
             "eslint-comments/no-unused-disable": "off",
             "i18n-text/no-en": "off",
             "import/no-namespace": "off",
+            "max-len": ["error", { code: 160 }],
             "no-console": "off",
             "no-shadow": "off",
             "no-unused-vars": "off",
