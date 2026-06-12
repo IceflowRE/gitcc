@@ -1,9 +1,6 @@
-// loader must be the first import as it handles the module loading of custom validators
-import "@/loader"
-
 import * as core from "@actions/core"
 import { Client, getClient } from "@/platform/common"
-import { importValidator } from "@/loader"
+import { importValidator } from "@/bootstrap"
 import { Result } from "@/result"
 import { checkCommits, parseValidatorOptions, printResults, Validator } from "@/validator"
 import { getValidatorByName } from "@/validators"

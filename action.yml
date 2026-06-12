@@ -19,4 +19,4 @@ inputs:
         description: "Platform to use: 'github' or 'forgejo'. If empty it will be automatically detected."
 runs:
     using: "node24"
-    main: "dist/index.js"
+    main: "dist/bootstrap.js"

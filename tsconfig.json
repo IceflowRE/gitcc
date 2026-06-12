@@ -15,7 +15,7 @@
         "noUnusedLocals": true,
         "noUnusedParameters": false,
         "outDir": "./dist",
-        "rootDir": "./src",
+        "rootDir": ".",
         "paths": {
             "@/*": ["./src/*"]
         },

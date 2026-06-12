@@ -25,5 +25,15 @@ export default [
             format: "es"
         },
         plugins: [typescript()]
+    },
+    {
+        input: "src/bootstrap.ts",
+        output: {
+            esModule: true,
+            file: "dist/bootstrap.js",
+            format: "es"
+        },
+        external: (id: string) => id.startsWith("node:") || builtinModules.includes(id),
+        plugins: [typescript()]
     }
 ]
