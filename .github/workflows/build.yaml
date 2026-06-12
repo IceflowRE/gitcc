@@ -1,0 +1,39 @@
+name: Build
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v6
+
+      - name: npm install
+        run: |
+          npm install
+
+      - name: npm run all
+        run: |
+          npm run all
+
+      - name: Commit Check (shipped SimpleTag)
+        uses: ./
+        with:
+          validator: "simpletag"
+
+      - name: Commit Check (shipped RegEx)
+        if: success() || failure()
+        uses: ./
+        with:
+          validator: "regex"
+          options: |
+            summary: ".*"
+            description: ".*"
+
+      - name: Commit Check (custom validator)
+        if: success() || failure()
+        uses: ./
+        with:
+          validator_file: "example/simpletag.mjs"

@@ -15,11 +15,15 @@
         "noUnusedLocals": true,
         "noUnusedParameters": false,
         "outDir": "./dist",
+        "paths": {
+            "@/*": ["./src/*"]
+        },
         "pretty": true,
         "resolveJsonModule": true,
         "strict": true,
         "strictNullChecks": true,
-        "target": "ES2022"
+        "target": "ES2022",
+        "types": ["node"]
     },
     "exclude": ["dist", "node_modules"]
 }

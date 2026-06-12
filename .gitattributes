@@ -1,0 +1,2 @@
+.devcontainer/post-create.sh text eol=lf
+* text=auto eol=lf

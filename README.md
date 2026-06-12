@@ -6,24 +6,50 @@
 
 [![GitHub Marketplace](https://img.shields.io/badge/GitHub_Marketplace-grey.svg?logo=github-actions)](https://github.com/marketplace/actions/git-commit-check)
 
-GitCC checks commit messages for certain rules.
+GitCC checks commit messages for certain rules. Available for [GitHub Actions](https://github.com/features/actions) and [Forgejo Actions](https://forgejo.org/docs/latest/user/actions/overview).
+
+A CLI version is also available at [GitHub](https://github.com/IceflowRE/gitcc-cli).
 
 ## Usage
 
+On Forgejo: `https://github.com/IceflowRE/gitcc@v3.0.0`  
+On GitHub: `IceflowRE/gitcc@v3.0.0`
+
+> [!note]
+> Unmutable release are used. There is no rolling tag like `latest` or `v3` because of the security implications.
+
+Minimal example:
+
 ```yaml
-    - uses: IceflowRE/gitcc@v2
-      with:
-        # GitHub private access token default: {{ $github.token }}.
-        access_token: ''
-        # Filepath to an own validator. On how to write your own, see below.
-        validator_file: ''
-        # Name of an validator which is shipped with gitcc. Valid names: SimpleTag
-        validator: ''
-        # Each line is passed as an entry of a list to the validator.
-        options: ''
+- uses: IceflowRE/gitcc@v3.0.0
+  with:
+    validator: "regex"
+    options: |
+      summary: ".*"
+      description: ".*"
 ```
 
-## Shipped validators
+All options:
+
+```yaml
+- uses: IceflowRE/gitcc@v3.0.0
+  with:
+    # Filepath to a validator file, relative to the root of the repository.
+    validator_file: ""
+    # Name of builtin validator: 'regex', 'simpletag'
+    validator: ""
+    # Each line is a seperate option passed to the validator (key: "value").
+    options: |
+      opt1: "val1"
+      opt2: "val2"
+    # Platform to use: 'github' or 'forgejo'. If empty it will be automatically detected.
+    platform: ""
+```
+
+> [!warning]
+> If you require the `FORGEJO_TOKEN` environment variable and run on GitHub, set `platform` to `github` to avoid errors.
+
+## Builtin validators
 
 ### SimpleTag
 
@@ -31,82 +57,88 @@ Format: `[<tag>] <Good Description>` (e.g. `[ci] Fix testing suite installation`
 
 ### RegEx
 
-Pass two lines to parameter `options`, first line is a regex for summary, second line is description.
-Using `>any<` means it accepts anything.
-
 ```yaml
-        - uses: IceflowRE/gitcc@v2
-          with:
-            validator: 'RegEx'
-            options: |
-              >any<
-              >any<
+- uses: IceflowRE/gitcc@v3.0.0
+  with:
+    validator: "RegEx"
+    options: |
+      summary: ".*"
+      description: ".*"
 ```
 
 ## Custom validators
 
-Create somewhere in your repository a file (e.g. `validator.mjs`) and use the path in `validator_file`.
+Custom validators can be written in Javascript and placed as a plain file in your repository. Just use the path as a value for `validator_file`.
 
-Your validator will inherit from [CommitValidator](https://www.google.com/search?q=./src/commit-validator.ts%23L48). Only implement the function you need, so it won't override the default behavior.
-
-You have to always return a [Result](https://www.google.com/search?q=./src/commmit-validator.ts%23L48). Only `Status.Failure` will result into an CI error.
-
-[CommitValidator](https://www.google.com/search?q=./src/commit-validator.ts%23L48) provides the following constructor/functions:
-
-* **`constructor(options: string[])`**
-    Options passed to GitHub workflow.
-* **`split_message(message: string): [string, string]`**
-    Will split the message into summary and description.
-* **`validate(commit: Commit): Result`**
-    Will call `validate_message` by default.
-* **`validate_message(summary: string, description: string): Result`**
-    For simple use cases when only the summary and description text has to be checked.
-
-Look here for the [Reference](https://www.google.com/search?q=%23reference) and a basic example [here](https://www.google.com/search?q=./example/simpleTag.mjs).
-
-### Template
-
-```javascript
-    /*
-    Used in GitHub Actions for validate commits.
-     */
-
-    let Commit
-    let CommitValidator
-    let Result
-    let Status
-
-    export function import_types(commitValidatorCls, commitCls, resultCls, statusCls) {
-        console.log(resultCls)
-        CommitValidator = commitValidatorCls
-        Commit = commitCls
-        Result = resultCls
-        Status = statusCls
-    }
-
-    export function createValidator() {
-        return class Validator extends CommitValidator {
-            // PLACE YOUR CODE HERE
-        }
-    }
+```yaml
+- uses: IceflowRE/gitcc@v3.0.0
+  with:
+    validator_file: ".github/workflows/myvalidator.mjs"
+    options: |
+      key1: "val1"
+      key2: "val2"
 ```
 
-## Reference
+The file has to export a function `createValidator` that returns an object with a function `validate(commit: Commit): Result`. This function will be called for each commit and should return a Result object with the validation result.
 
-* [Commit](https://www.google.com/search?q=./src/commit.ts%23L14)
-* [CommitValidator](https://www.google.com/search?q=./src/commit-validator.ts%23L48)
-* [Result](https://www.google.com/search?q=./src/commit-validator.ts%23L9)
-* [Status](https://www.google.com/search?q=./src/commit-validator.ts%23L3)
+```js
+export function createValidator(options) {
+    return {
+        validate(commit) {
+            return valid(commit)
+        }
+    }
+}
+```
+
+A full example can be found [here](https://github.com/IceflowRE/gitcc/tree/main/example/simpletag.mjs).
+
+Global available functions to help:
+
+- **`function invalid(message: string, commit?: Commit): Result`**
+  Helper function to create a Result with status `Status.Invalid`.
+- **`function valid(commit?: Commit): Result`**
+  Helper function to create a Result with status `Status.Valid`.
+- **`function warning(message: string, commit?: Commit): Result`**
+  Helper function to create a Result with status `Status.Warning`.
+- **`function splitCommitMessage(msg: string): [string, string]`**
+  Helper function to split a commit message into summary and description.
+
+### Reference
+
+```ts
+export interface User {
+    email?: string
+    name?: string
+    username?: string
+}
+
+export interface Commit {
+    author?: User
+    committer?: User
+    distinct?: boolean
+    hexsha?: string
+    timestamp?: Date
+    // the full commit message, including summary and description.
+    message?: string
+}
+```
 
 ## Changelog
 
+### 3.0.0
+
+- Enable unmutable releases.
+- Refactor codebase to be more maintainable and extensible.
+- Simplify custom scripts.
+
 ### 2.1.0
 
-* Running on Node 24 in GitHub Actions.
+- Running on Node 24 in GitHub Actions.
 
 ## License
 
-Copyright 2021-present Iceflower S (iceflower@gmx.de)
+Copyright 2021-present Iceflower S (iceflower@iceflower.eu)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

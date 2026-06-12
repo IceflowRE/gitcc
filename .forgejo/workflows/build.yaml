@@ -1,35 +1,39 @@
 name: Build
-on: [push, pull_request]
+on:
+  - push
+  - pull_request
 
 jobs:
-  build-gha:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
-        uses: actions/checkout@v6
+        uses: https://data.forgejo.org/actions/checkout@v6
 
       - name: npm install
-        working-directory: ./typescript
         run: |
           npm install
+
       - name: npm run all
-        working-directory: ./typescript
         run: |
           npm run all
+
       - name: Commit Check (shipped SimpleTag)
         uses: ./
         with:
-          validator: "SimpleTag"
+          validator: "simpletag"
+
       - name: Commit Check (shipped RegEx)
         if: success() || failure()
         uses: ./
         with:
-          validator: "RegEx"
+          validator: "regex"
           options: |
-            >any<
-            >any<
-      - name: Commit Check (local)
+            summary: ".*"
+            description: ".*"
+
+      - name: Commit Check (custom validator)
         if: success() || failure()
         uses: ./
         with:
-          validator_file: "typescript/example/simpleTag.mjs"
+          validator_file: "example/simpletag.mjs"

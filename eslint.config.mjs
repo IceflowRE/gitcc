@@ -1,11 +1,10 @@
 // See: https://eslint.org/docs/latest/use/configure/configuration-files
 
-import {FlatCompat} from "@eslint/eslintrc"
+import { FlatCompat } from "@eslint/eslintrc"
 import js from "@eslint/js"
 import typescriptEslint from "@typescript-eslint/eslint-plugin"
 import tsParser from "@typescript-eslint/parser"
 import jest from "eslint-plugin-jest"
-import prettier from "eslint-plugin-prettier"
 import globals from "globals"
 
 const compat = new FlatCompat({
@@ -28,7 +27,6 @@ export default [
     {
         plugins: {
             jest,
-            prettier,
             "@typescript-eslint": typescriptEslint
         },
 
@@ -49,7 +47,7 @@ export default [
                     allowDefaultProject: [
                         "__fixtures__/*.ts",
                         "__tests__/*.ts",
-                        "example/simpleTag.mjs",
+                        "example/simpletag.mjs",
                         "eslint.config.mjs",
                         "jest.config.js"
                     ]
