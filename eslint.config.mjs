@@ -48,8 +48,7 @@ export default [
                         "__fixtures__/*.ts",
                         "__tests__/*.ts",
                         "example/simpletag.mjs",
-                        "eslint.config.mjs",
-                        "jest.config.js"
+                        "eslint.config.mjs"
                     ]
                 },
                 tsconfigRootDir: import.meta.dirname
