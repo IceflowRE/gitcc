@@ -21,10 +21,10 @@ export function splitCommitMessage(msg: string): [string, string] {
 
     const idx = msg.indexOf("\n\n")
     if (idx === -1) {
-        return [msg, ""]
+        return [msg.replace(/\n$/, ""), ""]
     }
     const summary: string = msg.slice(0, idx)
-    const description: string = msg.slice(idx + 2)
+    const description: string = msg.slice(idx + 2).replace(/\n$/, "")
 
     return [summary, description]
 }
