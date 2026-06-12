@@ -38,7 +38,7 @@ All options:
     validator_file: ""
     # Name of builtin validator: 'regex', 'simpletag'
     validator: ""
-    # Each line is a seperate option passed to the validator (key: "value").
+    # Each line is a separate option passed to the validator (key: "value").
     options: |
       opt1: "val1"
       opt2: "val2"
@@ -82,10 +82,12 @@ Custom validators can be written in Javascript and placed as a plain file in you
 The file has to export a function `createValidator` that returns an object with a function `validate(commit: Commit): Result`. This function will be called for each commit and should return a Result object with the validation result.
 
 ```js
+import * as gitcc from "gitcc"
+
 export function createValidator(options) {
     return {
         validate(commit) {
-            return valid()
+            return gitcc.valid()
         }
     }
 }
