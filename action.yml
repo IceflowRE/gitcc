@@ -6,17 +6,21 @@ branding:
     color: "orange"
 inputs:
     validator_file:
-        required: false
         description: "Filepath to a validator file, relative to the root of the repository."
+        required: false
     validator:
-        required: false
         description: "Name of builtin validator: 'regex', 'simpletag'"
+        required: false
     options:
-        required: false
         description: 'Each line is a separate option passed to the validator (key: "value").'
-    platform:
         required: false
+    platform:
         description: "Platform to use: 'github' or 'forgejo'. If empty it will be automatically detected."
+        required: false
+    token:
+        description: "GitHub/Forgejo token"
+        required: false
+        default: ${{ github.token }}
 runs:
     using: "node24"
     main: "dist/index.js"

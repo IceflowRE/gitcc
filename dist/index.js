@@ -28125,7 +28125,7 @@ let Client$1 = class Client {
         this.sha = process.env.GITHUB_SHA;
         this.eventName = process.env.GITHUB_EVENT_NAME;
         this.serverUrl = process.env.GITHUB_SERVER_URL;
-        this.token = process.env.FORGEJO_TOKEN;
+        this.token = getInput("token") || process.env.FORGEJO_TOKEN || "";
         this.payload = JSON.parse(fs__default.readFileSync(process.env.GITHUB_EVENT_PATH, "utf-8"));
     }
     async get(path) {
@@ -33158,7 +33158,7 @@ class Client {
     }
     initOctokit() {
         if (!this.octokit) {
-            const token = process.env.GITHUB_TOKEN ?? "";
+            const token = getInput("token") || process.env.GITHUB_TOKEN || "";
             if (!token) {
                 throw new Error("GITHUB_TOKEN is not available. Add 'permissions: contents: read' to your workflow job.");
             }
