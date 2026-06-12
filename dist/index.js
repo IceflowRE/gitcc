@@ -28125,7 +28125,7 @@ let Client$1 = class Client {
         this.sha = process.env.GITHUB_SHA;
         this.eventName = process.env.GITHUB_EVENT_NAME;
         this.serverUrl = process.env.GITHUB_SERVER_URL;
-        this.token = process.env.GITHUB_TOKEN;
+        this.token = process.env.FORGEJO_TOKEN;
         this.payload = JSON.parse(fs__default.readFileSync(process.env.GITHUB_EVENT_PATH, "utf-8"));
     }
     async get(path) {
@@ -28188,14 +28188,16 @@ let Client$1 = class Client {
         while (true) {
             const data = (await this.get(`/repos/${headOwner.login}/${headRepo.name}/commits?sha=${head.ref}&since=${since}&limit=50&page=${page}`));
             for (const raw of data) {
-                if (raw.sha === base.sha)
+                if (raw.sha === base.sha) {
                     continue;
+                }
                 const inner = raw.commit;
                 const committer = inner.committer;
                 commits.push(parseCommit$1(inner, raw.sha, committer?.date ?? ""));
             }
-            if (data.length < 50)
+            if (data.length < 50) {
                 break;
+            }
             page++;
         }
         return commits;
@@ -33103,10 +33105,8 @@ function getOctokit(token, options, ...additionalPlugins) {
 
 class Client {
     octokit;
-    constructor() {
-        this.octokit = getOctokit(process.env.GITHUB_TOKEN ?? "");
-    }
     async downloadValidatorFile(validatorFile) {
+        this.initOctokit();
         const { data } = await this.octokit.rest.repos.getContent({
             path: validatorFile,
             owner: context.repo.owner,
@@ -33143,6 +33143,7 @@ class Client {
                     commits.push(parseCommit(payload.head_commit));
                 }
                 else {
+                    this.initOctokit();
                     const { data } = await this.octokit.rest.git.getCommit({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
@@ -33155,7 +33156,17 @@ class Client {
         }
         return commits;
     }
+    initOctokit() {
+        if (!this.octokit) {
+            const token = process.env.GITHUB_TOKEN ?? "";
+            if (!token) {
+                throw new Error("GITHUB_TOKEN is not available. Add 'permissions: contents: read' to your workflow job.");
+            }
+            this.octokit = getOctokit(token);
+        }
+    }
     async getCommitCreation(sha) {
+        this.initOctokit();
         const { data } = await this.octokit.rest.git.getCommit({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -33164,6 +33175,7 @@ class Client {
         return data.committer.date;
     }
     async getPullRequestCommits(pr) {
+        this.initOctokit();
         const commits = [];
         const since = await this.getCommitCreation(pr.base.sha);
         let page = 1;
