@@ -33097,8 +33097,14 @@ function getOctokit(token, options, ...additionalPlugins) {
 
 class Client {
     octokit;
+    constructor() {
+        const token = getInput("token") || process.env.GITHUB_TOKEN || "";
+        if (!token) {
+            throw new Error("GITHUB_TOKEN is not available. Add 'permissions: contents: read' to your workflow job.");
+        }
+        this.octokit = getOctokit(token);
+    }
     async downloadValidatorFile(validatorFile) {
-        this.initOctokit();
         const { data } = await this.octokit.rest.repos.getContent({
             path: validatorFile,
             owner: context.repo.owner,
@@ -33135,7 +33141,6 @@ class Client {
                     commits.push(parseCommit(payload.head_commit));
                 }
                 else {
-                    this.initOctokit();
                     const { data } = await this.octokit.rest.git.getCommit({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
@@ -33148,17 +33153,7 @@ class Client {
         }
         return commits;
     }
-    initOctokit() {
-        if (!this.octokit) {
-            const token = getInput("token") || process.env.GITHUB_TOKEN || "";
-            if (!token) {
-                throw new Error("GITHUB_TOKEN is not available. Add 'permissions: contents: read' to your workflow job.");
-            }
-            this.octokit = getOctokit(token);
-        }
-    }
     async getCommitCreation(sha) {
-        this.initOctokit();
         const { data } = await this.octokit.rest.git.getCommit({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -33167,7 +33162,6 @@ class Client {
         return data.committer.date;
     }
     async getPullRequestCommits(pr) {
-        this.initOctokit();
         const commits = [];
         const since = await this.getCommitCreation(pr.base.sha);
         let page = 1;
