@@ -1,11 +1,11 @@
-name: Deploy GitHub Actions
+name: Deploy Action
 on:
   push:
     branches:
       - main
 
 env:
-  gh_actions_git_path: "./gh-actions/"
+  action_git_path: "./action/"
   main_git_path: "./main/"
 
 jobs:
@@ -17,11 +17,11 @@ jobs:
         with:
           path: ${{ env.main_git_path }}
 
-      - name: Checkout gh-actions
+      - name: Checkout action
         uses: actions/checkout@v6
         with:
-          ref: "gh-actions"
-          path: ${{ env.gh_actions_git_path }}
+          ref: "action"
+          path: ${{ env.action_git_path }}
 
       - name: npm install
         working-directory: ${{ env.main_git_path }}
@@ -34,24 +34,24 @@ jobs:
           npm run bundle
 
       - name: Remove old files
-        working-directory: ${{ env.gh_actions_git_path }}
+        working-directory: ${{ env.action_git_path }}
         run: |
           rm -rf ./*
 
       - name: Copy new files
         run: |
-          mkdir -p ${{ env.gh_actions_git_path }}/dist/
-          cp -f ${{ env.main_git_path }}/README.md ${{ env.gh_actions_git_path }}
-          cp -rf ${{ env.main_git_path }}/dist* ${{ env.gh_actions_git_path }}/
-          cp -f ${{ env.main_git_path }}/action.yml ${{ env.gh_actions_git_path }}
+          mkdir -p ${{ env.action_git_path }}/dist/
+          cp -f ${{ env.main_git_path }}/README.md ${{ env.action_git_path }}
+          cp -rf ${{ env.main_git_path }}/dist* ${{ env.action_git_path }}/
+          cp -f ${{ env.main_git_path }}/action.yml ${{ env.action_git_path }}
 
       - name: Push new files
-        working-directory: ${{ env.gh_actions_git_path }}
+        working-directory: ${{ env.action_git_path }}
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
-          git diff-index --quiet HEAD || git commit -am "[actions] Build of ${{ github.sha }}"
+          git diff-index --quiet HEAD || git commit -am "[action] Build of ${{ github.sha }}"
           git push
 
   commit-check:
@@ -60,6 +60,6 @@ jobs:
     needs: deploy
     steps:
       - name: Commit Check
-        uses: IceflowRE/gitcc@gh-actions
+        uses: IceflowRE/gitcc@action
         with:
           validator: "simpletag"
