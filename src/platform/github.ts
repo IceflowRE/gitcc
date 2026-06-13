@@ -84,6 +84,9 @@ export class Client implements IClient {
                 page
             })
             for (const raw of data) {
+                if (raw.sha === pr.base.sha) {
+                    continue
+                }
                 commits.push(parseCommit(raw.commit, raw.sha, raw.commit.committer?.date ?? ""))
             }
             if (data.length < 100) {
