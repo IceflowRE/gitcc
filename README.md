@@ -16,7 +16,7 @@ On Forgejo: `https://github.com/IceflowRE/gitcc@v3.0.0`
 On GitHub: `IceflowRE/gitcc@v3.0.0`
 
 > [!note]
-> Unmutable release are used. There is no rolling tag like `latest` or `v3` because of the security implications.
+> Immutable release are used. There is no rolling tag like `latest` or `v3` because of the security implications.
 
 Minimal example:
 
@@ -44,7 +44,7 @@ All options:
           opt2: "val2"
       # Platform to use: 'github' or 'forgejo'. If empty it will be automatically detected.
       platform: ""
-      # GitHub / Forgejo token
+      # GitHub / Forgejo token. This is set automatically, normally there is no need to set this.
       token: ${{ github.token }}
 ```
 
@@ -81,7 +81,7 @@ Custom validators can be written in Javascript and placed as a plain file in you
           key2: "val2"
 ```
 
-The file has to export a function `createValidator` that returns an object with a function `validate(commit: Commit): Result`. This function will be called for each commit and should return a Result object with the validation result.
+The file has to export a function `createValidator` that returns an object with a function `validate(commit)`. This function will be called for each commit and should return a Result object with the validation result.
 
 ```js
 import * as gitcc from "gitcc"
@@ -97,7 +97,7 @@ export function createValidator(options) {
 
 A full example can be found [here](https://github.com/IceflowRE/gitcc/tree/main/example/simpletag.mjs).
 
-Helper functions are available in the `gitcc` module. Import with `import * as gitcc from "gitcc"`.
+Helper functions are available in the `gitcc` module. Import with `import * as gitcc from "gitcc"`. `gitcc` is a virtual module provided by the action, no installation or setup required.
 
 - **`function invalid(message: string, commit?: Commit): Result`**  
   Helper function to create a Result with status `Status.Invalid`.
@@ -132,7 +132,7 @@ export interface Commit {
 
 ### 3.0.0
 
-- Enable unmutable releases.
+- Enable immutable releases.
 - Refactor codebase to be more maintainable and extensible.
 - Simplify custom scripts.
 
