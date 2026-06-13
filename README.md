@@ -18,7 +18,8 @@ On Forgejo: `https://github.com/IceflowRE/gitcc@v3.0.0`
 On GitHub: `IceflowRE/gitcc@v3.0.0`
 
 > [!note]
-> Immutable release are used. There is no rolling tag like `latest` or `v3` because of the security implications.
+> Both exact tags (`v3.0.0`) and the rolling tag (`v3`) are available.
+> For security reasons, using exact tags is recommended, as rolling tags can be silently changed to point to a different commit.
 
 Minimal example:
 
