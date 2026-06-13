@@ -1,9 +1,14 @@
 import fs from "fs"
-import { resolve } from "path"
+import os from "os"
+import path from "path"
 import { pathToFileURL } from "url"
 import * as core from "@actions/core"
 import { Commit, User } from "@/commit"
 import { Client as IClient } from "@/platform/common"
+
+function encodeFilePath(filePath: string): string {
+    return filePath.split("/").map(encodeURIComponent).join("/")
+}
 
 export class Client implements IClient {
     private readonly owner: string
@@ -37,12 +42,13 @@ export class Client implements IClient {
     }
 
     async downloadValidatorFile(validatorFile: string): Promise<[string, string]> {
-        const data = (await this.get(`/repos/${this.owner}/${this.repo}/contents/${validatorFile}?ref=${this.sha}`)) as Record<string, unknown>
+        const data = (await this.get(`/repos/${this.owner}/${this.repo}/contents/${encodeFilePath(validatorFile)}?ref=${this.sha}`)) as Record<string, unknown>
         if (!("content" in data)) {
             throw new Error(`'${validatorFile}' is not a file or has no content`)
         }
         const content = Buffer.from(data.content as string, "base64").toString("utf-8")
-        const outputPath = pathToFileURL(resolve("./validator.mjs"))
+        const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "gitcc-"))
+        const outputPath = pathToFileURL(path.join(tmpDir, "validator.mjs"))
         fs.writeFileSync(outputPath, content)
         return [(data.html_url as string) ?? "", outputPath.toString()]
     }
@@ -72,17 +78,12 @@ export class Client implements IClient {
     }
 
     private async getPullRequestCommits(pr: Record<string, unknown>): Promise<Commit[]> {
-        const base = pr.base as Record<string, unknown>
         const prNumber = pr.number as number
-
         const commits: Commit[] = []
         let page = 1
         while (true) {
             const data = (await this.get(`/repos/${this.owner}/${this.repo}/pulls/${prNumber}/commits?limit=50&page=${page}`)) as Record<string, unknown>[]
             for (const raw of data) {
-                if (raw.sha === base.sha) {
-                    continue
-                }
                 const inner = raw.commit as Record<string, unknown>
                 const committer = inner.committer as Record<string, unknown>
                 commits.push(parseCommit(inner, raw.sha as string, (committer?.date as string) ?? ""))
