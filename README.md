@@ -8,6 +8,8 @@
 
 GitCC checks commit messages for certain rules. Available for [GitHub Actions](https://github.com/features/actions) and [Forgejo Actions](https://forgejo.org/docs/latest/user/actions/overview).
 
+The action is completely written in typescript and runs on Node 24.
+
 A CLI version is also available at [GitHub](https://github.com/IceflowRE/gitcc-cli).
 
 ## Usage
@@ -62,7 +64,7 @@ Format: `[<tag>] <Good Description>` (e.g. `[ci] Fix testing suite installation`
 ```yaml
 - uses: IceflowRE/gitcc@v3.0.0
   with:
-    validator: "RegEx"
+    validator: "regex"
     options: |
       summary: ".*"
       description: ".*"
