@@ -4,7 +4,7 @@ import fs__default, { promises, existsSync, readFileSync } from 'fs';
 import * as os from 'os';
 import os__default, { EOL } from 'os';
 import 'crypto';
-import { resolve } from 'path';
+import path from 'path';
 import http from 'http';
 import https from 'https';
 import 'net';
@@ -28109,6 +28109,9 @@ function info(message) {
     process.stdout.write(message + os.EOL);
 }
 
+function encodeFilePath(filePath) {
+    return filePath.split("/").map(encodeURIComponent).join("/");
+}
 let Client$1 = class Client {
     owner;
     repo;
@@ -28138,12 +28141,13 @@ let Client$1 = class Client {
         return res.json();
     }
     async downloadValidatorFile(validatorFile) {
-        const data = (await this.get(`/repos/${this.owner}/${this.repo}/contents/${validatorFile}?ref=${this.sha}`));
+        const data = (await this.get(`/repos/${this.owner}/${this.repo}/contents/${encodeFilePath(validatorFile)}?ref=${this.sha}`));
         if (!("content" in data)) {
             throw new Error(`'${validatorFile}' is not a file or has no content`);
         }
         const content = Buffer.from(data.content, "base64").toString("utf-8");
-        const outputPath = pathToFileURL(resolve("./validator.mjs"));
+        const tmpDir = fs__default.mkdtempSync(path.join(os__default.tmpdir(), "gitcc-"));
+        const outputPath = pathToFileURL(path.join(tmpDir, "validator.mjs"));
         fs__default.writeFileSync(outputPath, content);
         return [data.html_url ?? "", outputPath.toString()];
     }
@@ -28173,16 +28177,12 @@ let Client$1 = class Client {
         }
     }
     async getPullRequestCommits(pr) {
-        const base = pr.base;
         const prNumber = pr.number;
         const commits = [];
         let page = 1;
         while (true) {
             const data = (await this.get(`/repos/${this.owner}/${this.repo}/pulls/${prNumber}/commits?limit=50&page=${page}`));
             for (const raw of data) {
-                if (raw.sha === base.sha) {
-                    continue;
-                }
                 const inner = raw.commit;
                 const committer = inner.committer;
                 commits.push(parseCommit$1(inner, raw.sha, committer?.date ?? ""));
@@ -33115,7 +33115,8 @@ class Client {
             throw new Error(`'${validatorFile}' is not a file or has no content`);
         }
         const content = Buffer.from(data.content, "base64").toString("utf-8");
-        const outputPath = pathToFileURL(resolve("./validator.mjs"));
+        const tmpDir = fs__default.mkdtempSync(path.join(os__default.tmpdir(), "gitcc-"));
+        const outputPath = pathToFileURL(path.join(tmpDir, "validator.mjs"));
         fs__default.writeFileSync(outputPath, content);
         return [data.html_url ?? "", outputPath.toString()];
     }
@@ -33153,31 +33154,18 @@ class Client {
         }
         return commits;
     }
-    async getCommitCreation(sha) {
-        const { data } = await this.octokit.rest.git.getCommit({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            commit_sha: sha
-        });
-        return data.committer.date;
-    }
     async getPullRequestCommits(pr) {
         const commits = [];
-        const since = await this.getCommitCreation(pr.base.sha);
         let page = 1;
         while (true) {
-            const { data } = await this.octokit.rest.repos.listCommits({
-                owner: pr.head.repo.owner.login,
-                repo: pr.head.repo.name,
-                sha: pr.head.ref,
-                since,
+            const { data } = await this.octokit.rest.pulls.listCommits({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
                 per_page: 100,
                 page
             });
             for (const raw of data) {
-                if (raw.sha === pr.base.sha) {
-                    continue;
-                }
                 commits.push(parseCommit(raw.commit, raw.sha, raw.commit.committer?.date ?? ""));
             }
             if (data.length < 100) {
