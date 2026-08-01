@@ -53,7 +53,7 @@ jobs:
           git add .
           git diff-index --quiet HEAD || git commit -am "[action] Build of ${{ github.sha }}"
           git push
-      
+
       - name: Move rolling tag
         working-directory: ${{ env.action_git_path }}
         run: |
